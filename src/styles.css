@@ -1,0 +1,136 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tai Football Academy design system — "Elite performance dark".
+ * Pitch black surfaces, neon lime accent, Oswald display / Inter body.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-neon: var(--neon);
+  --color-pitch: var(--pitch);
+  --color-surface: var(--surface);
+  --font-display: var(--font-display-family);
+  --font-sans: var(--font-sans-family);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  --neon: oklch(0.94 0.24 122);
+  --pitch: oklch(0.145 0 0);
+  --surface: oklch(0.215 0 0);
+
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.215 0 0);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.215 0 0);
+  --popover-foreground: oklch(1 0 0);
+  --primary: oklch(0.94 0.24 122);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.26 0 0);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.26 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --accent: oklch(0.94 0.24 122);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.6 0.23 27);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.94 0.24 122);
+
+  --font-display-family: "Oswald", sans-serif;
+  --font-sans-family: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-pitch);
+    color: var(--color-foreground);
+    font-family: var(--font-sans-family);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display-family);
+  }
+}
+
+@utility eyebrow {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: color-mix(in oklab, var(--foreground) 45%, transparent);
+}
+
+@utility btn-neon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--neon);
+  color: var(--pitch);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  padding: 1rem 2.5rem;
+  transition: transform 200ms ease;
+
+  &:hover {
+    transform: scale(1.04);
+  }
+}
+
+@utility btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  padding: 1rem 2.5rem;
+  transition: background-color 200ms ease;
+
+  &:hover {
+    background-color: color-mix(in oklab, var(--foreground) 6%, transparent);
+  }
+}
