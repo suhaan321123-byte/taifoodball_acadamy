@@ -7,8 +7,7 @@ import logo from "@/assets/logo.png";
 const links = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
-  { to: "/courses", label: "Course" },
-  { to: "/trainers", label: "Trainers" },
+  { to: "/team", label: "Our Team" },
   { to: "/gallery", label: "Gallery" },
   { to: "/news", label: "News" },
   { to: "/contact", label: "Contact" },
@@ -29,7 +28,10 @@ export function SiteHeader() {
             height={44}
             className="size-11 object-contain"
           />
-          <span className="font-display text-2xl tracking-tighter uppercase">Tai Football</span>
+          <span className="font-display text-xl leading-none tracking-tighter">
+            <span className="block">TAi FOOTBALL</span>
+            <span className="block text-sm tracking-[0.4em]">ACADEMY</span>
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-8 text-sm font-medium uppercase tracking-widest text-foreground/70 lg:flex">

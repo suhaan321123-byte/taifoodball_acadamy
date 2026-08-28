@@ -1,16 +1,23 @@
-import gallery1 from "@/assets/gallery-1.jpg";
-import gallery2 from "@/assets/gallery-2.jpg";
-import gallery3 from "@/assets/gallery-3.jpg";
-import gallery4 from "@/assets/gallery-4.jpg";
-import gallery5 from "@/assets/gallery-5.jpg";
-import gallery6 from "@/assets/gallery-6.jpg";
-import news1 from "@/assets/news-1.jpg";
-import news2 from "@/assets/news-2.jpg";
+import galleryImage1 from "@/assets/gallery/file_000000003b80820ba82be1a2b861313d.png";
+import galleryImage2 from "@/assets/gallery/file_00000000b69c820b93ba9296a1097786.png";
+import galleryImage3 from "@/assets/gallery/IMG-20240120-WA0010.jpg.jpeg";
+import galleryImage4 from "@/assets/gallery/IMG-20240122-WA0035.jpg.jpeg";
+import galleryImage5 from "@/assets/gallery/IMG-20250405-WA0008.jpg.jpeg";
+import galleryImage6 from "@/assets/gallery/IMG-20250408-WA0008.jpg.jpeg";
+import galleryImage7 from "@/assets/gallery/IMG-20250415-WA0022.jpg.jpeg";
+import galleryImage8 from "@/assets/gallery/IMG-20250805-WA0004.jpg.jpeg";
+import galleryImage9 from "@/assets/gallery/IMG_20240826_223150_399.webp";
+import galleryImage10 from "@/assets/gallery/IMG_20240908_134256_631.webp";
+import galleryImage11 from "@/assets/gallery/IMG_20240909_212807_985.webp";
+import galleryImage12 from "@/assets/gallery/IMG_20251206_131641_741.jpg";
+import galleryImage13 from "@/assets/gallery/IMG_7359.JPG.jpeg";
+import news1 from "@/assets/IMG-20240120-WA0010.jpg.jpeg";
+import news2 from "@/assets/IMG_20251206_131641_741.jpg";
 import news3 from "@/assets/news-3.jpg";
-import trainer1 from "@/assets/coach1.png";
-import trainer2 from "@/assets/coach2.png";
-import trainer3 from "@/assets/coach3.png";
-import trainer4 from "@/assets/coach4.png";
+import trainer1 from "@/assets/ourteam/sinan pp.jpeg";
+import trainer2 from "@/assets/ourteam/akshay kv.jpeg";
+import trainer3 from "@/assets/ourteam/ajayshankar.jpeg";
+import trainer4 from "@/assets/ourteam/farzin.jpeg";
 
 export const certifications = [
   "All India Football Federation",
@@ -165,10 +172,17 @@ export const courses: Course[] = [
 ];
 
 export const galleryImages = [
-  { src: gallery1, alt: "Academy player dribbling past a defender under floodlights" },
-  { src: gallery2, alt: "Goalkeeper diving to make a save" },
-  { src: gallery3, alt: "Football boots and ball on the chalk line" },
-  { src: gallery4, alt: "Academy squad huddle before kick-off" },
-  { src: gallery5, alt: "Players running sprint and ladder drills indoors" },
-  { src: gallery6, alt: "Youth squad lifting the regional trophy" },
+  { src: galleryImage1, alt: "TAi Football Academy gallery image 01" },
+  { src: galleryImage2, alt: "TAi Football Academy gallery image 02" },
+  { src: galleryImage3, alt: "TAi Football Academy gallery image 03" },
+  { src: galleryImage4, alt: "TAi Football Academy gallery image 04" },
+  { src: galleryImage5, alt: "TAi Football Academy gallery image 05" },
+  { src: galleryImage6, alt: "TAi Football Academy gallery image 06" },
+  { src: galleryImage7, alt: "TAi Football Academy gallery image 07" },
+  { src: galleryImage8, alt: "TAi Football Academy gallery image 08" },
+  { src: galleryImage9, alt: "TAi Football Academy gallery image 09" },
+  { src: galleryImage10, alt: "TAi Football Academy gallery image 10" },
+  { src: galleryImage11, alt: "TAi Football Academy gallery image 11" },
+  { src: galleryImage12, alt: "TAi Football Academy gallery image 12" },
+  { src: galleryImage13, alt: "TAi Football Academy gallery image 13" },
 ];

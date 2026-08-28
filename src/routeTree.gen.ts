@@ -14,9 +14,9 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as TrainersRouteImport } from './routes/trainers'
 
 const IndexRoute = IndexRouteImport.update({
@@ -44,11 +44,6 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CoursesRoute = CoursesRouteImport.update({
-  id: '/courses',
-  path: '/courses',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
@@ -57,6 +52,11 @@ const GalleryRoute = GalleryRouteImport.update({
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrainersRoute = TrainersRouteImport.update({
@@ -71,9 +71,9 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/team': typeof TeamRoute
   '/trainers': typeof TrainersRoute
 }
 export interface FileRoutesByTo {
@@ -82,9 +82,9 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/team': typeof TeamRoute
   '/trainers': typeof TrainersRoute
 }
 export interface FileRoutesById {
@@ -94,9 +94,9 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/courses': typeof CoursesRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/team': typeof TeamRoute
   '/trainers': typeof TrainersRoute
 }
 export interface FileRouteTypes {
@@ -107,9 +107,9 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/contact'
-    | '/courses'
     | '/gallery'
     | '/news'
+    | '/team'
     | '/trainers'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -118,9 +118,9 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/contact'
-    | '/courses'
     | '/gallery'
     | '/news'
+    | '/team'
     | '/trainers'
   id:
     | '__root__'
@@ -129,9 +129,9 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/contact'
-    | '/courses'
     | '/gallery'
     | '/news'
+    | '/team'
     | '/trainers'
   fileRoutesById: FileRoutesById
 }
@@ -141,9 +141,9 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
-  CoursesRoute: typeof CoursesRoute
   GalleryRoute: typeof GalleryRoute
   NewsRoute: typeof NewsRoute
+  TeamRoute: typeof TeamRoute
   TrainersRoute: typeof TrainersRoute
 }
 
@@ -184,13 +184,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/courses': {
-      id: '/courses'
-      path: '/courses'
-      fullPath: '/courses'
-      preLoaderRoute: typeof CoursesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/gallery': {
       id: '/gallery'
       path: '/gallery'
@@ -203,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news'
       preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trainers': {
@@ -221,9 +221,9 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
-  CoursesRoute: CoursesRoute,
   GalleryRoute: GalleryRoute,
   NewsRoute: NewsRoute,
+  TeamRoute: TeamRoute,
   TrainersRoute: TrainersRoute,
 }
 export const routeTree = rootRouteImport

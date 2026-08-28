@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroBanner from "@/assets/herobanner.png";
-import { certifications, courses, news, trainers } from "@/data/academy";
+import gainSponsor from "@/assets/gain.jpg";
+import terraSponsor from "@/assets/terra.jpg";
+import { certifications, news } from "@/data/academy";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -54,8 +56,8 @@ function Index() {
               <Link to="/contact" className="btn-neon">
                 Join Academy
               </Link>
-              <Link to="/courses" className="btn-ghost">
-                Explore Courses
+              <Link to="/contact" className="btn-ghost">
+                Enquire Now
               </Link>
             </div>
           </div>
@@ -177,54 +179,32 @@ function Index() {
         </div>
       </section>
 
-      <section className="bg-surface/20 py-24">
+      <section className="border-t border-border bg-surface/20 py-24">
         <div className="mx-auto max-w-7xl px-6">
           <h2 className="mb-12 font-display text-4xl uppercase tracking-tighter sm:text-5xl">
-            Training Levels
+            Sponsors
           </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {courses.map((course) => (
-              <div key={course.title} className="rounded-lg border border-border bg-pitch p-8">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neon">
-                  {course.level}
-                </span>
-                <h3 className="mt-3 font-display text-3xl uppercase tracking-tight">
-                  {course.title}
-                </h3>
-                <p className="mt-4 text-sm leading-relaxed text-foreground/50">
-                  {course.description}
-                </p>
-                <p className="mt-6 font-display text-2xl">{course.price}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <h2 className="mb-12 font-display text-4xl uppercase tracking-tighter sm:text-5xl">
-            World Class Coaches
-          </h2>
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
-            {trainers.map((trainer) => (
-              <div key={trainer.name} className="space-y-4">
-                <img
-                  src={trainer.image}
-                  alt={`${trainer.name}, ${trainer.role}`}
-                  width={768}
-                  height={1024}
-                  loading="lazy"
-                  className="aspect-[3/4] w-full rounded-lg object-cover"
-                />
-                <div>
-                  <h4 className="font-display text-xl uppercase tracking-tight">{trainer.name}</h4>
-                  <p className="text-xs uppercase tracking-widest text-foreground/40">
-                    {trainer.role}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div className="flex aspect-[3/1] items-center justify-center rounded-lg border border-border bg-background p-8">
+              <img
+                src={gainSponsor}
+                alt="Gain sponsor"
+                width={1200}
+                height={400}
+                loading="lazy"
+                className="max-h-full w-full object-contain"
+              />
+            </div>
+            <div className="flex aspect-[3/1] items-center justify-center rounded-lg border border-border bg-background p-8">
+              <img
+                src={terraSponsor}
+                alt="Terra sponsor"
+                width={1200}
+                height={400}
+                loading="lazy"
+                className="max-h-full w-full object-contain"
+              />
+            </div>
           </div>
         </div>
       </section>

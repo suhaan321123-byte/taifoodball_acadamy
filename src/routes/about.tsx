@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import aboutImage from "@/assets/about.jpg";
+import aboutImage from "@/assets/IMG-20240122-WA0035.jpg.jpeg";
 import { certifications } from "@/data/academy";
 
 export const Route = createFileRoute("/about")({
@@ -24,16 +24,12 @@ export const Route = createFileRoute("/about")({
 
 const pillars = [
   {
-    title: "Technical First",
-    body: "Every session starts with the ball. Repetition under pressure builds a first touch that holds up in real matches.",
+    title: "Our Vision",
+    body: "To become a leading centre for youth football development, producing skilled, disciplined, and confident players who can compete at higher levels.",
   },
   {
-    title: "Tactical Intelligence",
-    body: "Players learn to read space, not memorise patterns. Weekly video review turns instinct into understanding.",
-  },
-  {
-    title: "Physical Resilience",
-    body: "Age-appropriate strength, conditioning and recovery programmes designed by our performance staff.",
+    title: "Our Mission",
+    body: "To provide quality football education and meaningful competitive opportunities while developing players with the skills, mindset, and values required to succeed.",
   },
 ];
 
@@ -42,15 +38,22 @@ function AboutPage() {
     <main className="pb-24">
       <section className="border-b border-border py-20">
         <div className="mx-auto max-w-7xl px-6">
-          <p className="eyebrow">About the academy</p>
+          <p className="eyebrow">About us</p>
           <h1 className="mt-6 max-w-3xl font-display text-5xl uppercase leading-[0.9] tracking-tighter lg:text-7xl">
-            Built for players who <span className="text-neon">refuse average</span>.
+            Developing players <span className="text-neon">with purpose</span>.
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-foreground/60">
-            Tai Football Academy was founded in 2018 with one goal: give committed young players the
-            same structured development a professional club environment provides. Today we train over
-            three hundred students across three levels, with certified coaches and year-round
-            scouting exposure.
+            TAi Football Academy was founded in 2016 with a clear vision to develop young
+            footballers through quality coaching, discipline, teamwork, and a genuine passion for
+            the game.
+            <br />
+            <br />
+            We believe football is more than just a sport. It is a journey that builds confidence,
+            character, leadership, fitness, and lifelong values.
+            <br />
+            <br />
+            From grassroots development to competitive football, TAi Football Academy provides young
+            players with the right environment to learn, improve, compete, and dream bigger.
           </p>
         </div>
       </section>

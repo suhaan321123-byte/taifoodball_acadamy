@@ -381,8 +381,8 @@ function AccountPage() {
             )}
           </div>
 
-          <Link to="/courses" className="btn-neon mt-10">
-            View all programmes
+          <Link to="/contact" className="btn-neon mt-10">
+            Enquire about programmes
           </Link>
         </div>
       </section>

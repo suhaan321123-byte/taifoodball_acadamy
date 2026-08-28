@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarDays, Home, Newspaper, User } from "lucide-react";
+import { Home, Newspaper, User, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export function MobileTabBar() {
@@ -7,7 +7,7 @@ export function MobileTabBar() {
 
   const tabs = [
     { to: "/", label: "Home", icon: Home, exact: true },
-    { to: "/courses", label: "Courses", icon: CalendarDays, exact: false },
+    { to: "/team", label: "Our Team", icon: Users, exact: false },
     { to: "/news", label: "News", icon: Newspaper, exact: false },
     { to: user ? "/account" : "/auth", label: "Account", icon: User, exact: false },
   ] as const;

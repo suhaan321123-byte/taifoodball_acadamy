@@ -117,13 +117,23 @@ function ContactPage() {
               <h2 className="font-display text-2xl uppercase tracking-tight">Academy ground</h2>
               <p className="mt-3 flex gap-3 text-sm text-foreground/60">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-neon" />
-                Tai Sports Complex, Sector 9, Ground Road, Mumbai 400076
+                <span>
+                  9/146, Pandikkak Building
+                  <br />
+                  Unnikulam, Balussery
+                  <br />
+                  Poonoor Road
+                  <br />
+                  Calicut, Kozhikode - 673574
+                  <br />
+                  Kerala, India
+                </span>
               </p>
             </div>
             <div className="space-y-3">
               <p className="flex gap-3 text-sm text-foreground/60">
                 <Phone className="mt-0.5 size-4 shrink-0 text-neon" />
-                +91 98200 41122
+                +91 81570 10114
               </p>
               <p className="flex gap-3 text-sm text-foreground/60">
                 <Mail className="mt-0.5 size-4 shrink-0 text-neon" />

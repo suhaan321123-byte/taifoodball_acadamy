@@ -36,11 +36,11 @@ export function SiteFooter() {
         <div className="space-y-4">
           <h5 className="text-[10px] font-bold uppercase tracking-widest">Navigation</h5>
           <nav className="flex flex-col gap-2 text-sm text-foreground/40">
-            <Link to="/courses" className="hover:text-neon">
-              Programmes
+            <Link to="/contact" className="hover:text-neon">
+              Enquire
             </Link>
-            <Link to="/trainers" className="hover:text-neon">
-              Coaching Staff
+            <Link to="/team" className="hover:text-neon">
+              Our Team
             </Link>
             <Link to="/gallery" className="hover:text-neon">
               Gallery
@@ -54,7 +54,7 @@ export function SiteFooter() {
         <div className="space-y-4">
           <h5 className="text-[10px] font-bold uppercase tracking-widest">Contact</h5>
           <p className="text-sm text-foreground/40">trials@taifootball.academy</p>
-          <p className="text-sm font-bold uppercase text-foreground/40">+91 98200 41122</p>
+          <p className="text-sm font-bold uppercase text-foreground/40">+91 81570 10114</p>
           <p className="text-[10px] uppercase italic tracking-widest text-neon">
             Open for Registration
           </p>
