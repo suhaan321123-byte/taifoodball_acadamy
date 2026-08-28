@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as SquadRouteImport } from './routes/squad'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as TrainersRouteImport } from './routes/trainers'
 
@@ -54,6 +55,11 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SquadRoute = SquadRouteImport.update({
+  id: '/squad',
+  path: '/squad',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
   path: '/team',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/squad': typeof SquadRoute
   '/team': typeof TeamRoute
   '/trainers': typeof TrainersRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/squad': typeof SquadRoute
   '/team': typeof TeamRoute
   '/trainers': typeof TrainersRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/squad': typeof SquadRoute
   '/team': typeof TeamRoute
   '/trainers': typeof TrainersRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/news'
+    | '/squad'
     | '/team'
     | '/trainers'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/news'
+    | '/squad'
     | '/team'
     | '/trainers'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/news'
+    | '/squad'
     | '/team'
     | '/trainers'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   NewsRoute: typeof NewsRoute
+  SquadRoute: typeof SquadRoute
   TeamRoute: typeof TeamRoute
   TrainersRoute: typeof TrainersRoute
 }
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/squad': {
+      id: '/squad'
+      path: '/squad'
+      fullPath: '/squad'
+      preLoaderRoute: typeof SquadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/team': {
       id: '/team'
       path: '/team'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   NewsRoute: NewsRoute,
+  SquadRoute: SquadRoute,
   TeamRoute: TeamRoute,
   TrainersRoute: TrainersRoute,
 }
