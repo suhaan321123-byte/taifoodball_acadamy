@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/auth")({
@@ -23,7 +22,7 @@ export const Route = createFileRoute("/auth")({
     ],
   }),
   validateSearch: (search: Record<string, unknown>) => ({
-    mode: search['mode'] === "signup" ? "signup" : "login",
+    mode: search["mode"] === "signup" ? "signup" : "login",
   }),
   component: AuthPage,
 });
@@ -69,20 +68,6 @@ function AuthPage() {
     } finally {
       setBusy(false);
     }
-  }
-
-  async function handleGoogle() {
-    setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      setBusy(false);
-      toast.error("Google sign-in failed. Please try again.");
-      return;
-    }
-    if (result.redirected) return;
-    void navigate({ to: "/account" });
   }
 
   return (
@@ -146,15 +131,6 @@ function AuthPage() {
           {busy ? "Please wait…" : isSignup ? "Create account" : "Sign in"}
         </button>
       </form>
-
-      <button
-        type="button"
-        onClick={handleGoogle}
-        disabled={busy}
-        className="btn-ghost mt-4 w-full disabled:opacity-60"
-      >
-        Continue with Google
-      </button>
 
       <button
         type="button"

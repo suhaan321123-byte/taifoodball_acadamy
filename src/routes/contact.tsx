@@ -120,13 +120,9 @@ function ContactPage() {
                 <span>
                   9/146, Pandikkak Building
                   <br />
-                  Unnikulam, Balussery
+                  Poonoor, Unnikulam, Balussery
                   <br />
-                  Poonoor Road
-                  <br />
-                  Calicut, Kozhikode - 673574
-                  <br />
-                  Kerala, India
+                  Kozhikode (Calicut), Kerala - 673574, India
                 </span>
               </p>
             </div>
@@ -136,8 +132,12 @@ function ContactPage() {
                 +91 81570 10114
               </p>
               <p className="flex gap-3 text-sm text-foreground/60">
+                <Phone className="mt-0.5 size-4 shrink-0 text-neon" />
+                +91 75940 01414
+              </p>
+              <p className="flex gap-3 text-sm text-foreground/60">
                 <Mail className="mt-0.5 size-4 shrink-0 text-neon" />
-                trials@taifootball.academy
+                tfa099@gmail.com
               </p>
             </div>
             <div>

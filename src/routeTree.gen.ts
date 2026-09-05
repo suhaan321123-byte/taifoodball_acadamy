@@ -16,8 +16,10 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SquadRouteImport } from './routes/squad'
 import { Route as TeamRouteImport } from './routes/team'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrainersRouteImport } from './routes/trainers'
 
 const IndexRoute = IndexRouteImport.update({
@@ -55,6 +57,11 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SquadRoute = SquadRouteImport.update({
   id: '/squad',
   path: '/squad',
@@ -63,6 +70,11 @@ const SquadRoute = SquadRouteImport.update({
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
   path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrainersRoute = TrainersRouteImport.update({
@@ -79,8 +91,10 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/privacy': typeof PrivacyRoute
   '/squad': typeof SquadRoute
   '/team': typeof TeamRoute
+  '/terms': typeof TermsRoute
   '/trainers': typeof TrainersRoute
 }
 export interface FileRoutesByTo {
@@ -91,8 +105,10 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/privacy': typeof PrivacyRoute
   '/squad': typeof SquadRoute
   '/team': typeof TeamRoute
+  '/terms': typeof TermsRoute
   '/trainers': typeof TrainersRoute
 }
 export interface FileRoutesById {
@@ -104,8 +120,10 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/news': typeof NewsRoute
+  '/privacy': typeof PrivacyRoute
   '/squad': typeof SquadRoute
   '/team': typeof TeamRoute
+  '/terms': typeof TermsRoute
   '/trainers': typeof TrainersRoute
 }
 export interface FileRouteTypes {
@@ -118,8 +136,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/news'
+    | '/privacy'
     | '/squad'
     | '/team'
+    | '/terms'
     | '/trainers'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -130,8 +150,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/news'
+    | '/privacy'
     | '/squad'
     | '/team'
+    | '/terms'
     | '/trainers'
   id:
     | '__root__'
@@ -142,8 +164,10 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/news'
+    | '/privacy'
     | '/squad'
     | '/team'
+    | '/terms'
     | '/trainers'
   fileRoutesById: FileRoutesById
 }
@@ -155,8 +179,10 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   NewsRoute: typeof NewsRoute
+  PrivacyRoute: typeof PrivacyRoute
   SquadRoute: typeof SquadRoute
   TeamRoute: typeof TeamRoute
+  TermsRoute: typeof TermsRoute
   TrainersRoute: typeof TrainersRoute
 }
 
@@ -211,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/squad': {
       id: '/squad'
       path: '/squad'
@@ -223,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/team'
       preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trainers': {
@@ -243,8 +283,10 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   NewsRoute: NewsRoute,
+  PrivacyRoute: PrivacyRoute,
   SquadRoute: SquadRoute,
   TeamRoute: TeamRoute,
+  TermsRoute: TermsRoute,
   TrainersRoute: TrainersRoute,
 }
 export const routeTree = rootRouteImport

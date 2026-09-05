@@ -2,7 +2,50 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroBanner from "@/assets/herobanner.png";
 import gainSponsor from "@/assets/gain.jpg";
 import terraSponsor from "@/assets/terra.jpg";
+import galleryImage1 from "@/assets/gallery/IMG-20240120-WA0010.jpg.jpeg";
+import galleryImage2 from "@/assets/gallery/IMG-20240122-WA0035.jpg.jpeg";
+import galleryImage3 from "@/assets/gallery/IMG-20250405-WA0008.jpg.jpeg";
+import galleryImage4 from "@/assets/gallery/IMG-20250415-WA0022.jpg.jpeg";
+import galleryImage5 from "@/assets/gallery/IMG_20240826_223150_399.webp";
+import galleryImage6 from "@/assets/gallery/IMG_20240908_134256_631.webp";
 import { certifications, news } from "@/data/academy";
+
+const galleryImages = [
+  { src: galleryImage1, alt: "Young players training on the pitch" },
+  { src: galleryImage2, alt: "Football academy training session" },
+  { src: galleryImage3, alt: "Players competing in an academy match" },
+  { src: galleryImage4, alt: "Team football action" },
+  { src: galleryImage5, alt: "Academy players during practice" },
+  { src: galleryImage6, alt: "Players developing their football skills" },
+];
+
+const testimonials = [
+  {
+    name: "Rishan",
+    quote:
+      "ഇവിടത്തെ ഓരോ ട്രെയിനിംഗ് സെഷനും ഞാൻ നന്നായി എൻജോയ് ചെയ്യുന്നു. പുതിയ സ്കിൽസും ഫിറ്റ്നസ് ട്രെയിനിംഗും കിട്ടുന്നുണ്ട്. കോച്ചുമാർ എപ്പോഴും നല്ല രീതിയിൽ മോട്ടിവേറ്റ് ചെയ്യും.",
+  },
+  {
+    name: "Nihal",
+    quote:
+      "The training is very systematic. We practice passing, shooting, dribbling and fitness. I can really see improvement in my game.",
+  },
+  {
+    name: "Shamil",
+    quote:
+      "Training here is challenging but fun. I have improved my stamina, ball control and confidence.",
+  },
+  {
+    name: "Arjun",
+    quote:
+      "Good academy for anyone who seriously wants to improve in football. Coaches explain things clearly and give us enough practice.",
+  },
+  {
+    name: "Rayan",
+    quote:
+      "ഇവിടെ ട്രെയിനിംഗിന് വരാൻ എനിക്ക് വളരെ ഇഷ്ടമാണ്. നല്ല ഫ്രണ്ട്ലി അന്തരീക്ഷമാണ്. ഫ്രണ്ട്സിനൊപ്പം എൻജോയ് ചെയ്തുകൊണ്ട് ഫുട്ബോൾ പഠിക്കാനും കഴിയുന്നു.",
+  },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -205,6 +248,82 @@ function Index() {
                 className="max-h-full w-full object-contain"
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="overflow-hidden border-t border-border py-16"
+        aria-label="Academy gallery"
+      >
+        <div className="mx-auto mb-8 flex max-w-7xl items-end justify-between gap-6 px-6">
+          <div>
+            <p className="eyebrow">From the pitch</p>
+            <h2 className="mt-3 font-display text-4xl uppercase tracking-tighter sm:text-5xl">
+              Academy in <span className="text-neon">motion</span>
+            </h2>
+          </div>
+          <Link
+            to="/gallery"
+            className="hidden border-b border-neon pb-1 text-xs font-bold uppercase tracking-widest text-neon sm:block"
+          >
+            View gallery
+          </Link>
+        </div>
+
+        <div className="image-marquee" aria-hidden="true">
+          <div className="image-marquee__track">
+            {[...galleryImages, ...galleryImages].map((image, index) => (
+              <div
+                key={`${image.src}-${index}`}
+                className="image-marquee__card overflow-hidden rounded-lg border border-border bg-surface/40"
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  width={640}
+                  height={480}
+                  loading="lazy"
+                  className="size-full object-cover transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 px-6 text-center sm:hidden">
+          <Link
+            to="/gallery"
+            className="border-b border-neon pb-1 text-xs font-bold uppercase tracking-widest text-neon"
+          >
+            View gallery
+          </Link>
+        </div>
+      </section>
+
+      <section className="border-t border-border bg-surface/20 py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-12 max-w-2xl">
+            <p className="eyebrow">Player perspective</p>
+            <h2 className="mt-3 font-display text-4xl uppercase tracking-tighter sm:text-5xl">
+              What our students <span className="text-neon">say</span>
+            </h2>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {testimonials.map((testimonial) => (
+              <figure
+                key={testimonial.name}
+                className="flex min-h-52 flex-col justify-between rounded-lg border border-border bg-background/70 p-6"
+              >
+                <blockquote className="text-sm leading-relaxed text-foreground/70">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </blockquote>
+                <figcaption className="mt-8 border-t border-border pt-4 text-xs font-bold uppercase tracking-widest text-neon">
+                  {testimonial.name} <span className="text-foreground/40">- Student</span>
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </div>
       </section>
