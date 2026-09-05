@@ -1,14 +1,4 @@
 {
   "buildCommand": "npm run build",
-  "framework": "nextjs",
-  "env": {
-    "SUPABASE_PROJECT_ID": "@supabase_project_id",
-    "SUPABASE_PUBLISHABLE_KEY": "@supabase_publishable_key",
-    "SUPABASE_URL": "@supabase_url",
-    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "@supabase_publishable_key",
-    "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
-    "VITE_SUPABASE_PROJECT_ID": "@vite_supabase_project_id",
-    "VITE_SUPABASE_PUBLISHABLE_KEY": "@vite_supabase_publishable_key",
-    "VITE_SUPABASE_URL": "@vite_supabase_url"
-  }
+  "framework": "nextjs"
 }
