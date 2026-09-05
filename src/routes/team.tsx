@@ -5,6 +5,12 @@ import akshayKv from "@/assets/ourteam/akshay kv.jpeg";
 import farzin from "@/assets/ourteam/farzin.jpeg";
 import sinanPp from "@/assets/ourteam/sinan pp.jpeg";
 
+type ImportedImage = string | { src: string };
+
+function imageSrc(image: ImportedImage): string {
+  return typeof image === "string" ? image : image.src;
+}
+
 type TeamMember = {
   name: string;
   image: string;
@@ -13,27 +19,27 @@ type TeamMember = {
 
 const founder: TeamMember = {
   name: "Rizwan",
-  image: avatar,
+  image: imageSrc(avatar),
   role: "Founder",
 };
 
 const technicalDirector: TeamMember = {
   name: "Adv. Shahabaz Ahamed",
-  image: avatar,
+  image: imageSrc(avatar),
   role: "Technical Director",
 };
 
 const trainers: TeamMember[] = [
-  { name: "Sinan PP", image: sinanPp, role: "Trainer" },
-  { name: "Akshy KV", image: akshayKv, role: "Trainer" },
-  { name: "Ajay", image: ajayShankar, role: "Trainer" },
-  { name: "Farzin", image: farzin, role: "Trainer" },
-  { name: "Dfinu", image: avatar, role: "Trainer" },
-  { name: "Jithu", image: avatar, role: "Trainer" },
-  { name: "Akshy", image: avatar, role: "Trainer" },
-  { name: "Abhi", image: avatar, role: "Trainer" },
-  { name: "Ansif", image: avatar, role: "Trainer" },
-  { name: "Alfas", image: avatar, role: "Trainer" },
+  { name: "Sinan PP", image: imageSrc(sinanPp), role: "Trainer" },
+  { name: "Akshy KV", image: imageSrc(akshayKv), role: "Trainer" },
+  { name: "Ajay", image: imageSrc(ajayShankar), role: "Trainer" },
+  { name: "Farzin", image: imageSrc(farzin), role: "Trainer" },
+  { name: "Dfinu", image: imageSrc(avatar), role: "Trainer" },
+  { name: "Jithu", image: imageSrc(avatar), role: "Trainer" },
+  { name: "Akshy", image: imageSrc(avatar), role: "Trainer" },
+  { name: "Abhi", image: imageSrc(avatar), role: "Trainer" },
+  { name: "Ansif", image: imageSrc(avatar), role: "Trainer" },
+  { name: "Alfas", image: imageSrc(avatar), role: "Trainer" },
 ];
 
 export const Route = createFileRoute("/team")({
@@ -42,8 +48,7 @@ export const Route = createFileRoute("/team")({
       { title: "Our Team — Tai Football Academy" },
       {
         name: "description",
-        content:
-          "Meet the founder, technical director and trainers behind Tai Football Academy.",
+        content: "Meet the founder, technical director and trainers behind Tai Football Academy.",
       },
       { property: "og:title", content: "Our Team — Tai Football Academy" },
       {

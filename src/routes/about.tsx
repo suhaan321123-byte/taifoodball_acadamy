@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import aboutImage from "@/assets/IMG-20240122-WA0035.jpg.jpeg";
 import { certifications } from "@/data/academy";
 
+const aboutImageSrc =
+  typeof aboutImage === "string" ? aboutImage : (aboutImage as unknown as { src: string }).src;
+
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
@@ -61,7 +64,7 @@ function AboutPage() {
       <section className="py-20">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
           <img
-            src={aboutImage}
+            src={aboutImageSrc}
             alt="Academy training session at dusk on a floodlit pitch"
             width={1200}
             height={900}
