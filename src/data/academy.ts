@@ -19,6 +19,12 @@ import trainer2 from "@/assets/ourteam/akshay kv.jpeg";
 import trainer3 from "@/assets/ourteam/ajayshankar.jpeg";
 import trainer4 from "@/assets/ourteam/farzin.jpeg";
 
+type ImportedImage = string | { src: string };
+
+function imageSrc(image: ImportedImage): string {
+  return typeof image === "string" ? image : image.src;
+}
+
 export const certifications = [
   "All India Football Federation",
   "AFC Grassroots Charter",
@@ -47,9 +53,9 @@ export const news: NewsItem[] = [
     body: [
       "Tai Football Academy's U19 side lifted the regional shield on Sunday evening after a controlled 3-0 win, closing out a campaign of eleven wins and three draws.",
       "The midfield press that has become the academy's signature forced twenty-two turnovers inside the opposition half. Two of the three goals came directly from those regains.",
-      "Head of Academy Marcus Thorne credited the double-session block introduced in pre-season: \"They earned this in January, in the cold, with nobody watching.\"",
+      'Head of Academy Marcus Thorne credited the double-session block introduced in pre-season: "They earned this in January, in the cold, with nobody watching."',
     ],
-    image: news1,
+    image: imageSrc(news1),
   },
   {
     slug: "new-head-of-training",
@@ -63,7 +69,7 @@ export const news: NewsItem[] = [
       "Her arrival brings a rebuilt positional-play curriculum: smaller pitches, faster decisions, and a rondo progression that runs across every age group.",
       "Students in Levels 2 and 3 will see the new session structure from the first week of the term, with video review sessions added every Thursday.",
     ],
-    image: news2,
+    image: imageSrc(news2),
   },
   {
     slug: "summer-trials-open",
@@ -77,7 +83,7 @@ export const news: NewsItem[] = [
       "Each player is assessed on technical execution, decision speed, physical profile and coachability. Every attendee receives a written report within ten days.",
       "Four full scholarship places are available for the 2026–27 intake, funded by the academy's alumni programme.",
     ],
-    image: news3,
+    image: imageSrc(news3),
   },
 ];
 
@@ -95,28 +101,28 @@ export const trainers: Trainer[] = [
     role: "Technical Lead",
     number: "07",
     bio: "UEFA Pro licence holder with fourteen years in professional youth development.",
-    image: trainer1,
+    image: imageSrc(trainer1),
   },
   {
     name: "Elena Ruiz",
     role: "Elite S&C Specialist",
     number: "12",
     bio: "Strength and conditioning lead, MSc in Sports Science, former national team physio.",
-    image: trainer2,
+    image: imageSrc(trainer2),
   },
   {
     name: "Dr. Aris Varma",
     role: "Youth Performance",
     number: "24",
     bio: "Oversees load management, tactical analysis and long-term athlete development.",
-    image: trainer3,
+    image: imageSrc(trainer3),
   },
   {
     name: "Kaito Taki",
     role: "Ball Mastery Coach",
     number: "31",
     bio: "Futsal specialist focused on close control, first touch and one-v-one execution.",
-    image: trainer4,
+    image: imageSrc(trainer4),
   },
 ];
 
@@ -172,17 +178,17 @@ export const courses: Course[] = [
 ];
 
 export const galleryImages = [
-  { src: galleryImage1, alt: "TAi Football Academy gallery image 01" },
-  { src: galleryImage2, alt: "TAi Football Academy gallery image 02" },
-  { src: galleryImage3, alt: "TAi Football Academy gallery image 03" },
-  { src: galleryImage4, alt: "TAi Football Academy gallery image 04" },
-  { src: galleryImage5, alt: "TAi Football Academy gallery image 05" },
-  { src: galleryImage6, alt: "TAi Football Academy gallery image 06" },
-  { src: galleryImage7, alt: "TAi Football Academy gallery image 07" },
-  { src: galleryImage8, alt: "TAi Football Academy gallery image 08" },
-  { src: galleryImage9, alt: "TAi Football Academy gallery image 09" },
-  { src: galleryImage10, alt: "TAi Football Academy gallery image 10" },
-  { src: galleryImage11, alt: "TAi Football Academy gallery image 11" },
-  { src: galleryImage12, alt: "TAi Football Academy gallery image 12" },
-  { src: galleryImage13, alt: "TAi Football Academy gallery image 13" },
+  { src: imageSrc(galleryImage1), alt: "TAi Football Academy gallery image 01" },
+  { src: imageSrc(galleryImage2), alt: "TAi Football Academy gallery image 02" },
+  { src: imageSrc(galleryImage3), alt: "TAi Football Academy gallery image 03" },
+  { src: imageSrc(galleryImage4), alt: "TAi Football Academy gallery image 04" },
+  { src: imageSrc(galleryImage5), alt: "TAi Football Academy gallery image 05" },
+  { src: imageSrc(galleryImage6), alt: "TAi Football Academy gallery image 06" },
+  { src: imageSrc(galleryImage7), alt: "TAi Football Academy gallery image 07" },
+  { src: imageSrc(galleryImage8), alt: "TAi Football Academy gallery image 08" },
+  { src: imageSrc(galleryImage9), alt: "TAi Football Academy gallery image 09" },
+  { src: imageSrc(galleryImage10), alt: "TAi Football Academy gallery image 10" },
+  { src: imageSrc(galleryImage11), alt: "TAi Football Academy gallery image 11" },
+  { src: imageSrc(galleryImage12), alt: "TAi Football Academy gallery image 12" },
+  { src: imageSrc(galleryImage13), alt: "TAi Football Academy gallery image 13" },
 ];

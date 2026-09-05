@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
 import logo from "@/assets/logo.png";
 
+const logoSrc = typeof logo === "string" ? logo : (logo as unknown as { src: string }).src;
+
 export function SiteFooter() {
   return (
     <footer className="relative overflow-hidden border-t border-border bg-surface/20 pb-28 pt-20 lg:pb-12">
@@ -10,7 +12,7 @@ export function SiteFooter() {
         <div>
           <div className="mb-6 flex items-center gap-3">
             <img
-              src={logo}
+              src={logoSrc}
               alt="Tai Football Academy crest"
               width={48}
               height={48}

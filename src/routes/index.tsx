@@ -10,13 +10,19 @@ import galleryImage5 from "@/assets/gallery/IMG_20240826_223150_399.webp";
 import galleryImage6 from "@/assets/gallery/IMG_20240908_134256_631.webp";
 import { certifications, news } from "@/data/academy";
 
+type ImportedImage = string | { src: string };
+
+function getImageSrc(image: ImportedImage): string {
+  return typeof image === "string" ? image : image.src;
+}
+
 const galleryImages = [
-  { src: galleryImage1, alt: "Young players training on the pitch" },
-  { src: galleryImage2, alt: "Football academy training session" },
-  { src: galleryImage3, alt: "Players competing in an academy match" },
-  { src: galleryImage4, alt: "Team football action" },
-  { src: galleryImage5, alt: "Academy players during practice" },
-  { src: galleryImage6, alt: "Players developing their football skills" },
+  { src: getImageSrc(galleryImage1), alt: "Young players training on the pitch" },
+  { src: getImageSrc(galleryImage2), alt: "Football academy training session" },
+  { src: getImageSrc(galleryImage3), alt: "Players competing in an academy match" },
+  { src: getImageSrc(galleryImage4), alt: "Team football action" },
+  { src: getImageSrc(galleryImage5), alt: "Academy players during practice" },
+  { src: getImageSrc(galleryImage6), alt: "Players developing their football skills" },
 ];
 
 const testimonials = [
@@ -73,7 +79,7 @@ function Index() {
       <section className="relative flex min-h-[80vh] items-center overflow-hidden lg:h-[90vh]">
         <div className="absolute inset-0 z-0">
           <img
-            src={heroBanner}
+            src={getImageSrc(heroBanner)}
             alt="Tai Football Academy youth players sprinting with the ball at sunset"
             width={1792}
             height={896}
@@ -143,7 +149,7 @@ function Index() {
             {news.slice(0, 2).map((item) => (
               <article key={item.slug} className="group">
                 <img
-                  src={item.image}
+                  src={getImageSrc(item.image as ImportedImage)}
                   alt={item.title}
                   width={1024}
                   height={640}
@@ -230,7 +236,7 @@ function Index() {
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="flex aspect-[3/1] items-center justify-center rounded-lg border border-border bg-background p-8">
               <img
-                src={gainSponsor}
+                src={getImageSrc(gainSponsor)}
                 alt="Gain sponsor"
                 width={1200}
                 height={400}
@@ -240,7 +246,7 @@ function Index() {
             </div>
             <div className="flex aspect-[3/1] items-center justify-center rounded-lg border border-border bg-background p-8">
               <img
-                src={terraSponsor}
+                src={getImageSrc(terraSponsor)}
                 alt="Terra sponsor"
                 width={1200}
                 height={400}

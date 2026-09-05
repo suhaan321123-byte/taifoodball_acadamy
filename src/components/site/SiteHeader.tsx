@@ -4,6 +4,8 @@ import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.png";
 
+const logoSrc = typeof logo === "string" ? logo : (logo as unknown as { src: string }).src;
+
 const links = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
@@ -23,7 +25,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
           <img
-            src={logo}
+            src={logoSrc}
             alt="Tai Football Academy crest"
             width={44}
             height={44}
