@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import Image from "next/image";
 import heroBanner from "@/assets/herobanner.png";
 import gainSponsor from "@/assets/gain.jpg";
 import terraSponsor from "@/assets/terra.jpg";
@@ -78,12 +79,13 @@ function Index() {
     <main>
       <section className="relative flex min-h-[80vh] items-center overflow-hidden lg:h-[90vh]">
         <div className="absolute inset-0 z-0">
-          <img
-            src={getImageSrc(heroBanner)}
+          <Image
+            src={heroBanner}
             alt="Tai Football Academy youth players sprinting with the ball at sunset"
-            width={1792}
-            height={896}
-            className="size-full object-cover"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-pitch via-pitch/60 to-pitch/20" />
         </div>
@@ -284,12 +286,12 @@ function Index() {
                 key={`${image.src}-${index}`}
                 className="image-marquee__card overflow-hidden rounded-lg border border-border bg-surface/40"
               >
-                <img
+                <Image
                   src={image.src}
                   alt={image.alt}
                   width={640}
                   height={480}
-                  loading="lazy"
+                  sizes="(max-width: 768px) 80vw, 320px"
                   className="size-full object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
