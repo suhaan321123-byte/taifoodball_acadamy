@@ -1,11 +1,12 @@
 // app/student-registration/page.jsx
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Loader2, AlertCircle } from "lucide-react";
 import RegistrationStepper from "./RegistrationStepper";
 import PersonalProfileStep from "./PersonalProfileStep";
-import CourseSelectionStep from "./CourseSelectionStep";
+import CourseSelectionStep, { getPlanPricing } from "./CourseSelectionStep";
 import AdmissionDetailsStep from "./AdmissionDetailsStep";
+import AdmissionSuccessPage from "./AdmissionSuccessPage";
 import {
   getGroupsOfCoursesApi,
   registerCourseApi,
@@ -13,7 +14,6 @@ import {
 } from "../../api/businessWebsite/classRoom/customers/customersApis";
 import { uploadImageApi } from "../../api/cloudinary/cloudinary";
 import { useRouter } from "next/navigation";
-import SuccessModal from "./SuccessModal";
 import { getStudentBranchesApi } from "../../api/businessWebsite/studentApi/studentApi";
 
 const accountTypeId = process.env.NEXT_PUBLIC_ACCOUNT_TYPE_ID || "";
@@ -22,30 +22,6 @@ const normalizeMoney = (value) => {
   const amount = Number(value || 0);
   if (!Number.isFinite(amount)) return 0;
   return Math.max(amount, 0);
-};
-
-const getPlanCycleCount = (plan) => {
-  const frequency = String(plan?.paymentFrequency || "one-time").toLowerCase();
-  const value = Number(plan?.duration?.value || 1) || 1;
-  const unit = String(plan?.duration?.unit || "month").toLowerCase();
-
-  if (frequency === "one-time") return 1;
-  if (frequency === "daily") return unit === "day" ? value : Math.max(1, value);
-  if (frequency === "weekly") return unit === "week" ? value : Math.max(1, value);
-  if (frequency === "monthly") return unit === "month" ? value : Math.max(1, value);
-  if (frequency === "every-2-months") {
-    return Math.max(1, Math.round((unit === "month" ? value : value) / 2));
-  }
-  if (frequency === "quarterly") {
-    return Math.max(1, Math.round((unit === "month" ? value : value) / 3));
-  }
-  if (frequency === "half-yearly") {
-    return Math.max(1, Math.round((unit === "month" ? value : value) / 6));
-  }
-  if (frequency === "yearly" || frequency === "annually") {
-    return unit === "year" ? value : Math.max(1, Math.round(value / 12));
-  }
-  return 1;
 };
 
 const loadRazorpayScript = () => {
@@ -89,6 +65,7 @@ const initialForm = {
   estimatedDurationCount: "1",
   workingDays: [],
   profilePhoto: null,
+  paymentOption: "online",
 };
 
 export default function StudentRegistrationPage() {
@@ -96,13 +73,12 @@ export default function StudentRegistrationPage() {
   const [form, setForm] = useState(initialForm);
   const [branches, setBranches] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [imageError, setImageError] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(
-    "Your registration has been completed successfully. You will receive a confirmation email shortly.",
-  );
+  const [registrationSuccess, setRegistrationSuccess] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
   const router = useRouter();
   const [error, setError] = useState(null);
@@ -125,60 +101,10 @@ export default function StudentRegistrationPage() {
     );
   }, [selectedCourse]);
 
-  const pricingSummary = useMemo(() => {
-    if (!selectedPlan) {
-      return {
-        baseAmount: 0,
-        discountAmount: 0,
-        registrationFee: 0,
-        securityDeposit: 0,
-        taxAmount: 0,
-        recurringAmount: 0,
-        firstPaymentAmount: 0,
-        estimatedFee: 0,
-      };
-    }
-
-    const baseAmount = normalizeMoney(selectedPlan?.price);
-    const discountValue = normalizeMoney(selectedPlan?.discount?.value);
-    const discountUnit = String(selectedPlan?.discount?.unit || "percentage").toLowerCase();
-    const discountAmount =
-      discountValue > 0
-        ? discountUnit === "amount"
-          ? discountValue
-          : (baseAmount * discountValue) / 100
-        : 0;
-    const discountedPrice = Math.max(baseAmount - discountAmount, 0);
-    const registrationFee = normalizeMoney(selectedPlan?.registrationFee);
-    const securityDeposit = normalizeMoney(selectedPlan?.securityDeposit);
-    const taxPercentage = normalizeMoney(selectedPlan?.taxPercentage);
-    const taxAmount = selectedPlan?.taxEnabled ? (discountedPrice * taxPercentage) / 100 : 0;
-    const registrationFeeTaxAmount =
-      selectedPlan?.taxEnabled && registrationFee > 0 ? (registrationFee * taxPercentage) / 100 : 0;
-    const recurringAmount = discountedPrice + taxAmount;
-    const firstPaymentAmount =
-      recurringAmount + registrationFee + securityDeposit + registrationFeeTaxAmount;
-    const selectedCycles = isRecurringCourse
-      ? Math.max(1, Number.parseInt(form.estimatedDurationCount || "1", 10) || 1)
-      : getPlanCycleCount(selectedPlan);
-    const estimatedFee =
-      recurringAmount * selectedCycles +
-      registrationFee +
-      securityDeposit +
-      registrationFeeTaxAmount;
-
-    return {
-      baseAmount,
-      discountAmount,
-      registrationFee,
-      securityDeposit,
-      taxAmount: taxAmount + registrationFeeTaxAmount,
-      recurringAmount,
-      firstPaymentAmount,
-      estimatedFee,
-      selectedCycles,
-    };
-  }, [form.estimatedDurationCount, isRecurringCourse, selectedPlan]);
+  const pricingSummary = useMemo(
+    () => getPlanPricing(selectedPlan, selectedCourse, isRecurringCourse, form.estimatedDurationCount),
+    [form.estimatedDurationCount, isRecurringCourse, selectedCourse, selectedPlan],
+  );
 
   const fetchCourses = async () => {
     try {
@@ -219,8 +145,7 @@ export default function StudentRegistrationPage() {
   };
 
   useEffect(() => {
-    getBranches();
-    fetchCourses();
+    Promise.all([getBranches(), fetchCourses()]).finally(() => setLoadingOptions(false));
   }, []);
 
   const updateForm = (field, value) => {
@@ -378,10 +303,11 @@ export default function StudentRegistrationPage() {
             notes: form.notes ? form.notes.trim() : "",
           },
         },
-        paymentMethodType: form.courseFlowType === "new_course" ? "online" : "none",
-        paymentMethod: form.courseFlowType === "new_course" ? "Online" : "Cash",
+        paymentMethodType:
+          form.courseFlowType === "new_course" && form.paymentOption === "online" ? "online" : "none",
+        paymentMethod: form.paymentOption === "pay_later" ? "Cash" : "Online",
         paymentAmount:
-          form.courseFlowType === "new_course"
+          form.courseFlowType === "new_course" && form.paymentOption === "online"
             ? normalizeMoney(pricingSummary.firstPaymentAmount)
             : 0,
         transactionId: "",
@@ -411,6 +337,7 @@ export default function StudentRegistrationPage() {
             name: optionsData.businessName || "Course Payment",
             order_id: optionsData.order_id,
             handler: async (razorpayResponse) => {
+              setVerifyingPayment(true);
               try {
                 const verifyResponse = await verifyCourseSubscriptionPaymentApi({
                   razorpay_payment_id: razorpayResponse.razorpay_payment_id,
@@ -420,11 +347,16 @@ export default function StudentRegistrationPage() {
                 });
 
                 if (verifyResponse?.success || verifyResponse?.message === "success") {
-                  setSuccessMessage(
-                    "Your course payment was verified and your registration is complete. Sign in to the student portal to view your dashboard.",
-                  );
+                  setRegistrationSuccess({
+                    student: response.student,
+                    subscription: response.subscription,
+                    paymentChoice: "online",
+                    paymentStatus: "Paid and verified",
+                    paymentVerified: true,
+                    paymentGatewayUnavailable: false,
+                  });
                   setLoading(false);
-                  setShowSuccessModal(true);
+                  setVerifyingPayment(false);
                 } else {
                   throw new Error(
                     verifyResponse?.message || "Payment verification failed. Please try again.",
@@ -434,12 +366,14 @@ export default function StudentRegistrationPage() {
                 console.error("Payment verification error:", error);
                 setError(error?.message || "Payment verification failed. Please try again.");
                 setLoading(false);
+                setVerifyingPayment(false);
               }
             },
             modal: {
               ondismiss: function () {
                 setError("Checkout was closed before payment completed. You can submit again to retry.");
                 setLoading(false);
+                setVerifyingPayment(false);
               },
             },
           };
@@ -458,7 +392,16 @@ export default function StudentRegistrationPage() {
         }
       } else {
         setLoading(false);
-        setShowSuccessModal(true);
+        setRegistrationSuccess({
+          student: response.student,
+          subscription: response.subscription,
+          paymentChoice: form.paymentOption,
+          paymentStatus: response.paymentGatewayUnavailable
+            ? "Payment pending - gateway unavailable"
+            : form.paymentOption === "pay_later" ? "Pay later at the academy" : "No payment due",
+          paymentVerified: false,
+          paymentGatewayUnavailable: Boolean(response.paymentGatewayUnavailable),
+        });
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -467,28 +410,41 @@ export default function StudentRegistrationPage() {
     }
   };
 
-  const handleModalClose = () => {
-    setShowSuccessModal(false);
-    router.push("/auth?mode=login");
-  };
+  if (verifyingPayment) {
+    return (
+      <main className="fixed inset-0 z-[100] flex min-h-screen items-center justify-center bg-pitch px-6 text-foreground">
+        <section className="w-full max-w-md text-center">
+          <span className="mx-auto grid size-20 place-items-center rounded-full border border-neon/30 bg-neon/10"><Loader2 className="size-9 animate-spin text-neon" /></span>
+          <p className="eyebrow mt-7">Payment received</p>
+          <h1 className="mt-2 font-display text-4xl uppercase">Verifying your payment</h1>
+          <p className="mt-3 text-sm leading-6 text-foreground/55">Please keep this page open while we confirm your payment and prepare your admission form.</p>
+        </section>
+      </main>
+    );
+  }
+
+  if (registrationSuccess) {
+    return (
+      <AdmissionSuccessPage
+        form={form}
+        student={registrationSuccess.student}
+        subscription={registrationSuccess.subscription}
+        course={selectedCourse}
+        plan={selectedPlan}
+        branchName={branches.find((branch) => String(branch._id) === String(form.branchIds))?.name}
+        pricing={pricingSummary}
+        paymentChoice={registrationSuccess.paymentChoice}
+        paymentStatus={registrationSuccess.paymentStatus}
+        paymentVerified={registrationSuccess.paymentVerified}
+        paymentGatewayUnavailable={registrationSuccess.paymentGatewayUnavailable}
+        onGoToPortal={() => router.push("/auth")}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* ── HEADER (mirrors SiteHeader style tokens) ── */}
-      <header className="sticky top-0 z-40 border-b border-border bg-pitch/90 backdrop-blur-md">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <span className="font-display text-xl leading-none tracking-tighter">
-              <span className="block">TAi FOOTBALL</span>
-              <span className="block text-sm tracking-[0.4em]">ACADEMY</span>
-            </span>
-          </div>
-          <div className="rounded-full border border-border px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/70 sm:text-[11px]">
-            Step {step} / 3
-          </div>
-        </div>
-      </header>
-
       {/* ── STEPPER ── */}
       <div className="border-b border-border bg-pitch/40">
         <div className="mx-auto max-w-6xl">
@@ -542,6 +498,10 @@ export default function StudentRegistrationPage() {
             selectedCourse={selectedCourse}
             setSelectedCourse={setSelectedCourse}
             selectedPlan={selectedPlan}
+            pricingSummary={pricingSummary}
+            isRecurringCourse={isRecurringCourse}
+            loadingData={loadingOptions}
+            selectedBranch={branches.find((branch) => String(branch._id) === String(form.branchIds))}
             errors={validationErrors}
           />
         )}
@@ -599,15 +559,6 @@ export default function StudentRegistrationPage() {
       </div>
 
       {/* ── SUCCESS MODAL ── */}
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={handleModalClose}
-        title="Registration Successful! 🎉"
-        message={successMessage}
-        redirectUrl="/auth?mode=login"
-        autoCloseDelay={5000}
-        showCountdown={true}
-      />
     </div>
   );
 }
