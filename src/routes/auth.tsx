@@ -70,6 +70,20 @@ function AuthPage() {
     }
   }
 
+  async function handleGoogleSignIn() {
+    setBusy(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/account` },
+      });
+      if (error) throw error;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to sign in with Google");
+      setBusy(false);
+    }
+  }
+
   return (
     <main className="mx-auto flex max-w-md flex-col justify-center px-6 py-20">
       <p className="eyebrow">Student portal</p>
@@ -131,6 +145,20 @@ function AuthPage() {
           {busy ? "Please wait…" : isSignup ? "Create account" : "Sign in"}
         </button>
       </form>
+
+      <div className="my-5 flex items-center gap-3 text-[10px] uppercase tracking-widest text-foreground/35">
+        <span className="h-px flex-1 bg-border" />
+        or continue with
+        <span className="h-px flex-1 bg-border" />
+      </div>
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={busy}
+        className="w-full rounded-md border border-border bg-surface/40 px-4 py-3 text-sm font-semibold transition-colors hover:border-neon disabled:opacity-60"
+      >
+        Continue with Google
+      </button>
 
       <button
         type="button"
