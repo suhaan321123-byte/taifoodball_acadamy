@@ -14,6 +14,7 @@ export default function AdmissionSuccessPage({
   plan,
   pricing,
   branchName,
+  branchAddress,
   paymentChoice,
   paymentStatus,
   paymentVerified,
@@ -43,6 +44,7 @@ export default function AdmissionSuccessPage({
         courseName: course?.title,
         planName: plan?.title,
         branchName,
+        branchAddress,
         admissionDate: form.admissionDate || form.startDate,
         startDate: form.startDate,
         durationLabel: `${pricing?.cycles || form.estimatedDurationCount || 1} ${pricing?.cycles === 1 ? "installment" : "installments"}`,
@@ -94,7 +96,7 @@ export default function AdmissionSuccessPage({
             </div>
             <div className="grid gap-x-8 sm:grid-cols-2">
               <SummaryRow label="Programme" value={course?.title || "Selected programme"} />
-              <SummaryRow label="Package" value={plan?.title || "Selected package"} />
+              <SummaryRow label={plan?.title ? "Package" : "Billing"} value={plan?.title || "Recurring course"} />
               <SummaryRow label="Training branch" value={branchName || "Selected branch"} />
               <SummaryRow label="Admission date" value={formatDate(form.admissionDate || form.startDate)} />
               <SummaryRow label="Student email" value={form.email} />

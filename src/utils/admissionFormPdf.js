@@ -1,4 +1,5 @@
 import { jsPDF } from "jspdf";
+import logoAsset from "@/assets/logo.png";
 
 const formatDate = (value) => {
   if (!value) return "Not provided";
@@ -10,8 +11,20 @@ const formatDate = (value) => {
 
 const formatMoney = (value) => `INR ${Number(value || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
 
-export function downloadAdmissionFormPdf(details) {
+async function loadLogoData() {
+  const image = new Image();
+  image.src = typeof logoAsset === "string" ? logoAsset : logoAsset.src;
+  await new Promise((resolve, reject) => { image.onload = resolve; image.onerror = reject; });
+  const canvas = document.createElement("canvas");
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
+  canvas.getContext("2d").drawImage(image, 0, 0);
+  return canvas.toDataURL("image/png");
+}
+
+export async function downloadAdmissionFormPdf(details) {
   const pdf = new jsPDF({ unit: "mm", format: "a4", compress: true });
+  const logoData = await loadLogoData();
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 17;
@@ -27,7 +40,8 @@ export function downloadAdmissionFormPdf(details) {
     pdf.setTextColor(...neon);
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(10);
-    pdf.text("TAI FOOTBALL ACADEMY", margin, 13);
+    pdf.addImage(logoData, "PNG", margin, 7, 14, 14);
+    pdf.text("TAI FOOTBALL ACADEMY", margin + 18, 13);
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(continued ? 15 : 21);
     pdf.text(continued ? "ADMISSION FORM - CONTINUED" : "STUDENT ADMISSION FORM", margin, continued ? 21 : 27);
@@ -36,16 +50,13 @@ export function downloadAdmissionFormPdf(details) {
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(8.5);
       pdf.text("Official student registration record", margin, 35);
-      pdf.setFillColor(...neon);
-      pdf.roundedRect(pageWidth - margin - 39, 12, 39, 10, 3, 3, "F");
-      pdf.setTextColor(...ink);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(8);
-      pdf.text(details.paymentStatus || "REGISTRATION", pageWidth - margin - 19.5, 18.5, { align: "center" });
       pdf.setTextColor(215, 222, 215);
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(8);
-      pdf.text(`Form ID: ${details.formId || "Pending"}`, pageWidth - margin - 39, 29, { align: "right" });
+      pdf.text(`Created: ${formatDate(new Date())}`, pageWidth - margin, 19, { align: "right" });
+      pdf.text(`Form ID: ${details.formId || "Pending"}`, pageWidth - margin, 27, { align: "right" });
+      pdf.setFontSize(7);
+      pdf.text(String(details.branchAddress || details.branchName || "Academy training centre"), margin + 18, 20, { maxWidth: 100 });
     }
     y = continued ? 34 : 56;
   };
@@ -102,18 +113,6 @@ export function downloadAdmissionFormPdf(details) {
   row("Estimated duration", details.durationLabel);
   row("Registration ID", details.memberCode || details.formId || "Pending");
 
-  section("Fees and payment");
-  row("Package price", formatMoney(details.baseAmount));
-  if (Number(details.discountAmount) > 0) row("Discount", `- ${formatMoney(details.discountAmount)}`);
-  row("Registration fee", formatMoney(details.registrationFee));
-  row("Security deposit", formatMoney(details.securityDeposit));
-  (details.additionalCharges || []).forEach((charge) => row(charge.label || "Additional fee", formatMoney(charge.amount)));
-  row("Tax", formatMoney(details.taxAmount));
-  if (Number(details.recurringAmount) > 0) row("Recurring installment", formatMoney(details.recurringAmount));
-  row("Estimated total", formatMoney(details.estimatedFee), { bold: true });
-  row("Payment choice", details.paymentChoice === "pay_later" ? "Pay later at the academy" : "Online payment");
-  row("Payment status", details.paymentStatus);
-
   section("Parent / guardian and emergency contact");
   row("Guardian name", details.guardianName);
   row("Guardian phone", details.guardianPhone);
@@ -122,6 +121,23 @@ export function downloadAdmissionFormPdf(details) {
   row("Emergency phone", details.emergencyContactPhone);
   row("Blood group", details.bloodGroup);
   if (details.notes) row("Additional notes", details.notes);
+
+  const feeRows = [
+    ["Programme fee", details.baseAmount],
+    ["Discount", Number(details.discountAmount) > 0 ? -Number(details.discountAmount) : 0],
+    ["Registration fee", details.registrationFee],
+    ["Security deposit", details.securityDeposit],
+    ...(details.additionalCharges || []).map((charge) => [charge.label || "Additional fee", charge.amount]),
+    ["Tax", details.taxAmount],
+    ["Recurring installment", details.recurringAmount],
+    ["Estimated total", details.estimatedFee],
+  ].filter(([, amount]) => Math.abs(Number(amount)) > 0);
+  if (feeRows.length) {
+    section("Fees and payment");
+    feeRows.forEach(([label, amount]) => row(label, label === "Discount" ? `- ${formatMoney(Math.abs(amount))}` : formatMoney(amount), { bold: label === "Estimated total" }));
+    row("Payment choice", details.paymentChoice === "pay_later" ? "Pay later at the academy" : "Online payment");
+    row("Payment status", details.paymentStatus);
+  }
 
   ensureSpace(27);
   y += 5;

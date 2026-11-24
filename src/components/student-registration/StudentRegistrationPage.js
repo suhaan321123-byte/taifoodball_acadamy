@@ -85,11 +85,21 @@ export default function StudentRegistrationPage() {
 
   const selectedPlan = useMemo(() => {
     if (!selectedCourse) return null;
-    return (
+    const matchedPlan =
       selectedCourse.subscriptionPlans?.find((plan) => String(plan?._id) === String(form.planId)) ||
-      selectedCourse.subscriptionPlans?.[0] ||
-      null
-    );
+      selectedCourse.subscriptionPlans?.[0];
+    if (matchedPlan) return matchedPlan;
+    if (String(selectedCourse?.billingConfig?.feeModel || "").toLowerCase() !== "recurring") return null;
+    const billing = selectedCourse.billingConfig || {};
+    return {
+      _id: "recurring-course-fee",
+      title: billing.planName || billing.feeLabel || "Recurring training fee",
+      price: billing.recurringAmount ?? billing.installmentAmount ?? billing.monthlyFee ?? billing.amount ?? billing.price ?? 0,
+      registrationFee: billing.registrationFee,
+      securityDeposit: billing.securityDeposit,
+      additionalCharges: billing.additionalCharges,
+      taxPercentage: billing.taxPercentage,
+    };
   }, [selectedCourse, form.planId]);
 
   const isRecurringCourse = useMemo(() => {
@@ -214,7 +224,7 @@ export default function StudentRegistrationPage() {
       errors.courseId = "Please select a course";
     }
 
-    if (!form.planId) {
+    if (!form.planId && !isRecurringCourse) {
       errors.planId = "Please select a package";
     }
 
@@ -273,7 +283,7 @@ export default function StudentRegistrationPage() {
         courseFlowType: form.courseFlowType,
         studentId: form.studentId || undefined,
         courseId: form.courseId || undefined,
-        planId: form.planId || undefined,
+        planId: form.planId && form.planId !== "recurring-course-fee" ? form.planId : undefined,
         startDate: form.startDate || undefined,
         estimatedDurationCount: isRecurringCourse
           ? Math.max(1, Number.parseInt(form.estimatedDurationCount || "1", 10) || 1)
@@ -432,6 +442,7 @@ export default function StudentRegistrationPage() {
         course={selectedCourse}
         plan={selectedPlan}
         branchName={branches.find((branch) => String(branch._id) === String(form.branchIds))?.name}
+        branchAddress={branches.find((branch) => String(branch._id) === String(form.branchIds))?.address || branches.find((branch) => String(branch._id) === String(form.branchIds))?.location || ""}
         pricing={pricingSummary}
         paymentChoice={registrationSuccess.paymentChoice}
         paymentStatus={registrationSuccess.paymentStatus}
@@ -485,7 +496,7 @@ export default function StudentRegistrationPage() {
       )}
 
       {/* ── FORM CONTENT ── */}
-      <main className="mx-auto max-w-[620px] px-3 pb-[110px] pt-4 sm:px-5 sm:pt-7">
+      <main className="mx-auto w-full max-w-[720px] px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-4 sm:px-6 sm:pt-7">
         {step === 1 && (
           <PersonalProfileStep form={form} updateForm={updateForm} errors={validationErrors} />
         )}
@@ -511,8 +522,8 @@ export default function StudentRegistrationPage() {
       </main>
 
       {/* ── BOTTOM NAVIGATION ── */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-pitch/95 px-3 py-3 shadow-lg backdrop-blur-sm">
-        <div className="mx-auto flex max-w-[620px] gap-2 sm:gap-3">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-pitch/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur-sm">
+        <div className="mx-auto flex w-full max-w-[720px] gap-2 sm:gap-3">
           {step > 1 && (
             <button
               type="button"

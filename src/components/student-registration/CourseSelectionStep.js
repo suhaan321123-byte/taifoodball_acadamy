@@ -119,9 +119,9 @@ export default function CourseSelectionStep({
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="eyebrow">{selectedCourse.title}</p>
-              <h2 className="mt-1 font-display text-2xl uppercase sm:text-3xl">Choose your package</h2>
+              <h2 className="mt-1 font-display text-2xl uppercase sm:text-3xl">{plans.length ? "Choose your package" : "Recurring training fee"}</h2>
             </div>
-            <span className="rounded-full border border-border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-foreground/50">{plans.length} {plans.length === 1 ? "option" : "options"}</span>
+            <span className="rounded-full border border-border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-foreground/50">{plans.length ? `${plans.length} ${plans.length === 1 ? "package" : "packages"}` : isRecurringCourse ? "Recurring billing" : "No packages"}</span>
           </div>
 
           {plans.length ? (
@@ -167,8 +167,23 @@ export default function CourseSelectionStep({
                 );
               })}
             </div>
+          ) : isRecurringCourse ? (
+            <div className="rounded-2xl border border-neon/30 bg-neon/[0.06] p-4 sm:p-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neon">Recurring programme</p><h3 className="mt-2 font-display text-2xl uppercase">{selectedCourse.title}</h3><p className="mt-2 text-xs leading-5 text-foreground/55">This programme bills by recurring installments. There are no separate packages to choose.</p></div>
+                <div className="rounded-xl bg-background/70 px-4 py-3 sm:min-w-40 sm:text-right"><p className="text-[9px] uppercase tracking-widest text-foreground/45">Per installment</p><p className="mt-1 font-display text-2xl">{money(pricingSummary?.recurringAmount)}</p></div>
+              </div>
+              <div className="mt-5 grid gap-2 rounded-xl border border-border/70 bg-background/40 p-3 text-xs sm:grid-cols-2 sm:p-4">
+                {pricingSummary?.registrationFee > 0 ? <FeeLine label="Registration fee" value={money(pricingSummary.registrationFee)} /> : null}
+                {pricingSummary?.securityDeposit > 0 ? <FeeLine label="Security deposit" value={money(pricingSummary.securityDeposit)} /> : null}
+                {(pricingSummary?.additionalCharges || []).filter((charge) => Number(charge.amount) > 0).map((charge, index) => <FeeLine key={`${charge.label}-${index}`} label={charge.label || "Additional fee"} value={money(charge.amount)} />)}
+                {pricingSummary?.taxAmount > 0 ? <FeeLine label="Tax" value={money(pricingSummary.taxAmount)} /> : null}
+              </div>
+              <label className="mt-4 block max-w-xs"><span className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-foreground/55">Number of installments</span><input type="number" min="1" max="24" inputMode="numeric" value={form.estimatedDurationCount || "1"} onChange={(event) => updateForm("estimatedDurationCount", event.target.value)} className="h-12 w-full rounded-xl border border-border bg-background/70 px-4 text-base outline-none focus:border-neon" /></label>
+              <div className="mt-4 flex items-center justify-between rounded-xl bg-background/70 px-4 py-3"><span className="text-xs text-foreground/55">Estimated total ({pricingSummary?.cycles || 1} installments)</span><strong className="font-display text-xl">{money(pricingSummary?.estimatedFee)}</strong></div>
+            </div>
           ) : (
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 text-sm text-amber-200/80">This programme does not have any packages available right now. Please contact the academy for help.</div>
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 text-sm text-amber-200/80">This programme does not have packages available right now. Please contact the academy for help.</div>
           )}
           <FieldError>{errors.planId}</FieldError>
         </div>
