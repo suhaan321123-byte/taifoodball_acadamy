@@ -44,17 +44,16 @@ export async function downloadAdmissionFormPdf(details) {
     pdf.text("TAI FOOTBALL ACADEMY", margin + 18, 13);
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(continued ? 15 : 21);
-    pdf.text(continued ? "ADMISSION FORM - CONTINUED" : "STUDENT ADMISSION FORM", margin, continued ? 21 : 27);
+    // pdf.text(continued ? "ADMISSION FORM - CONTINUED" : "STUDENT ADMISSION FORM", margin, continued ? 21 : 27);
     if (!continued) {
       pdf.setTextColor(215, 222, 215);
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(8.5);
-      pdf.text("Official student registration record", margin, 35);
       pdf.setTextColor(215, 222, 215);
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(8);
       pdf.text(`Created: ${formatDate(new Date())}`, pageWidth - margin, 19, { align: "right" });
-      pdf.text(`Form ID: ${details.formId || "Pending"}`, pageWidth - margin, 27, { align: "right" });
+      // pdf.text(`Form ID: ${details.formId || "Pending"}`, pageWidth - margin, 27, { align: "right" });
       pdf.setFontSize(7);
       pdf.text(String(details.branchAddress || details.branchName || "Academy training centre"), margin + 18, 20, { maxWidth: 100 });
     }
@@ -95,6 +94,9 @@ export async function downloadAdmissionFormPdf(details) {
     pdf.setDrawColor(228, 233, 225);
     pdf.line(margin, y, pageWidth - margin, y);
   };
+
+      pdf.text("Official student registration record", margin, 35);
+
 
   addHeader();
   section("Student profile");

@@ -81,7 +81,7 @@ export default function AdmissionSuccessPage({
           <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border border-neon/30 bg-neon/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-neon"><BadgeCheck size={14} /> Admission submitted</span>
-              <h1 className="mt-5 max-w-2xl font-display text-4xl uppercase leading-[0.98] tracking-tight sm:text-6xl">Welcome to the <span className="text-neon">academy</span>, {studentName.split(" ")[0]}.</h1>
+              <h1 className="mt-5 max-w-2xl font-display text-2xl uppercase leading-[0.98] tracking-tight sm:text-6xl">Welcome to the <span className="text-neon">academy</span>, {studentName.split(" ")[0]}.</h1>
               <p className="mt-4 max-w-xl text-sm leading-6 text-foreground/60">Your registration is saved. Keep this admission summary for your records and download a copy of your completed form.</p>
             </div>
             <div className="grid size-24 place-items-center justify-self-start rounded-full border border-neon/25 bg-neon/10 md:size-28 md:justify-self-end"><span className="grid size-16 place-items-center rounded-full bg-neon text-pitch md:size-[76px]"><Check className="size-9" strokeWidth={3} /></span></div>

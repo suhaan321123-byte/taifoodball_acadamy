@@ -1,5 +1,6 @@
 // app/student-registration/page.jsx
 "use client";
+
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Loader2, AlertCircle } from "lucide-react";
 import RegistrationStepper from "./RegistrationStepper";
@@ -83,22 +84,74 @@ export default function StudentRegistrationPage() {
   const router = useRouter();
   const [error, setError] = useState(null);
 
+  /* ── Derive selected plan (with recurring fallback) ──────── */
   const selectedPlan = useMemo(() => {
     if (!selectedCourse) return null;
+
     const matchedPlan =
-      selectedCourse.subscriptionPlans?.find((plan) => String(plan?._id) === String(form.planId)) ||
-      selectedCourse.subscriptionPlans?.[0];
-    if (matchedPlan) return matchedPlan;
-    if (String(selectedCourse?.billingConfig?.feeModel || "").toLowerCase() !== "recurring") return null;
+      selectedCourse.subscriptionPlans?.find(
+        (plan) => String(plan?._id) === String(form.planId),
+      ) || selectedCourse.subscriptionPlans?.[0];
+
+    if (matchedPlan) {
+      // ✅ merge billingConfig fallbacks so the UI + API agree
+      const billing = selectedCourse.billingConfig || {};
+      return {
+        ...matchedPlan,
+        registrationFee:
+          Number(matchedPlan.registrationFee) > 0
+            ? matchedPlan.registrationFee
+            : billing.registrationFee ?? 0,
+        securityDeposit:
+          Number(matchedPlan.securityDeposit) > 0
+            ? matchedPlan.securityDeposit
+            : billing.securityDeposit ?? 0,
+        taxPercentage:
+          Number(matchedPlan.taxPercentage) > 0
+            ? matchedPlan.taxPercentage
+            : billing.taxPercentage ?? 0,
+        taxEnabled:
+          Boolean(matchedPlan.taxEnabled) || Boolean(billing.taxEnabled),
+        additionalCharges:
+          Array.isArray(matchedPlan.additionalCharges) &&
+          matchedPlan.additionalCharges.length
+            ? matchedPlan.additionalCharges
+            : Array.isArray(billing.additionalCharges)
+              ? billing.additionalCharges
+              : [],
+      };
+    }
+
+    if (
+      String(selectedCourse?.billingConfig?.feeModel || "").toLowerCase() !==
+      "recurring"
+    ) {
+      return null;
+    }
+
     const billing = selectedCourse.billingConfig || {};
     return {
       _id: "recurring-course-fee",
       title: billing.planName || billing.feeLabel || "Recurring training fee",
-      price: billing.recurringAmount ?? billing.installmentAmount ?? billing.monthlyFee ?? billing.amount ?? billing.price ?? 0,
+      price:
+        billing.recurringAmount ??
+        billing.installmentAmount ??
+        billing.monthlyFee ??
+        billing.amount ??
+        billing.price ??
+        0,
       registrationFee: billing.registrationFee,
       securityDeposit: billing.securityDeposit,
       additionalCharges: billing.additionalCharges,
+      taxEnabled: billing.taxEnabled,
       taxPercentage: billing.taxPercentage,
+      discount: billing.discount,
+      duration: billing.recurringBillingCycle?.duration || {
+        value: 1,
+        unit: "month",
+      },
+      paymentFrequency:
+        billing.recurringBillingCycle?.key || "monthly",
     };
   }, [selectedCourse, form.planId]);
 
@@ -111,11 +164,25 @@ export default function StudentRegistrationPage() {
     );
   }, [selectedCourse]);
 
-  const pricingSummary = useMemo(
-    () => getPlanPricing(selectedPlan, selectedCourse, isRecurringCourse, form.estimatedDurationCount),
-    [form.estimatedDurationCount, isRecurringCourse, selectedCourse, selectedPlan],
+  /* ── Auto-derived installment count (never user-edited) ──── */
+  const autoCycles = useMemo(
+    () => Math.max(1, Number(selectedPlan?.duration?.value || 1) || 1),
+    [selectedPlan],
   );
 
+  /* ── Pricing summary — tax-inclusive + registration fee ──── */
+  const pricingSummary = useMemo(
+    () =>
+      getPlanPricing(
+        selectedPlan,
+        selectedCourse,
+        isRecurringCourse,
+        String(autoCycles),
+      ),
+    [autoCycles, isRecurringCourse, selectedCourse, selectedPlan],
+  );
+
+  /* ── Fetch branches ──────────────────────────────────────── */
   const fetchCourses = async () => {
     try {
       const response = await getGroupsOfCoursesApi({
@@ -136,9 +203,7 @@ export default function StudentRegistrationPage() {
 
   const getBranches = async () => {
     try {
-      const response = await getStudentBranchesApi({
-        accountTypeId,
-      });
+      const response = await getStudentBranchesApi({ accountTypeId });
       if (response.success) {
         const branchList = response?.branches;
         setBranches(
@@ -155,19 +220,16 @@ export default function StudentRegistrationPage() {
   };
 
   useEffect(() => {
-    Promise.all([getBranches(), fetchCourses()]).finally(() => setLoadingOptions(false));
+    Promise.all([getBranches(), fetchCourses()]).finally(() =>
+      setLoadingOptions(false),
+    );
   }, []);
 
+  /* ── Form helpers ────────────────────────────────────────── */
   const updateForm = (field, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setForm((prev) => ({ ...prev, [field]: value }));
     if (validationErrors[field]) {
-      setValidationErrors((prev) => ({
-        ...prev,
-        [field]: "",
-      }));
+      setValidationErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -185,6 +247,7 @@ export default function StudentRegistrationPage() {
     }
   };
 
+  /* ── Validation ──────────────────────────────────────────── */
   const validateForm = () => {
     const errors = {};
 
@@ -224,21 +287,29 @@ export default function StudentRegistrationPage() {
       errors.courseId = "Please select a course";
     }
 
-    if (!form.planId && !isRecurringCourse) {
+    // For recurring courses there is no package to choose → skip planId check
+    if (
+      !form.planId &&
+      !isRecurringCourse &&
+      !(selectedCourse?.subscriptionPlans?.length > 0)
+    ) {
       errors.planId = "Please select a package";
     }
 
     if (form.emergencyContactName && !form.emergencyContactName.trim()) {
-      errors.emergencyContactName = "Emergency contact name is required if provided";
+      errors.emergencyContactName =
+        "Emergency contact name is required if provided";
     }
 
     if (form.emergencyContactPhone && form.emergencyContactPhone.length < 10) {
-      errors.emergencyContactPhone = "Valid 10-digit phone number is required";
+      errors.emergencyContactPhone =
+        "Valid 10-digit phone number is required";
     }
 
     return errors;
   };
 
+  /* ── Submit ──────────────────────────────────────────────── */
   const handleSubmit = async () => {
     setError(null);
     setImageError(null);
@@ -248,7 +319,9 @@ export default function StudentRegistrationPage() {
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
       const firstErrorField = Object.keys(errors)[0];
-      const errorElement = document.querySelector(`[data-field="${firstErrorField}"]`);
+      const errorElement = document.querySelector(
+        `[data-field="${firstErrorField}"]`,
+      );
       if (errorElement) {
         errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
       }
@@ -272,24 +345,46 @@ export default function StudentRegistrationPage() {
             throw new Error("Unable to upload the student photo.");
           }
         } catch (uploadError) {
-          setImageError(uploadError?.message || "Unable to upload the student photo.");
+          setImageError(
+            uploadError?.message || "Unable to upload the student photo.",
+          );
           setLoading(false);
           return;
         }
       }
 
+      /* ── Build request — includes full plan snapshot ─────── */
       const requestData = {
         accountTypeId,
         courseFlowType: form.courseFlowType,
         studentId: form.studentId || undefined,
         courseId: form.courseId || undefined,
-        planId: form.planId && form.planId !== "recurring-course-fee" ? form.planId : undefined,
+        planId:
+          form.planId && form.planId !== "recurring-course-fee"
+            ? form.planId
+            : undefined,
         startDate: form.startDate || undefined,
-        estimatedDurationCount: isRecurringCourse
-          ? Math.max(1, Number.parseInt(form.estimatedDurationCount || "1", 10) || 1)
-          : undefined,
+        estimatedDurationCount: isRecurringCourse ? autoCycles : undefined,
         workingDays: isRecurringCourse ? form.workingDays : undefined,
         branchIds: form.branchIds ? [form.branchIds] : [],
+
+        /* ✅ send fee snapshot so backend matches UI exactly */
+        courseAmount: normalizeMoney(pricingSummary.baseAmount),
+        registrationFee: normalizeMoney(pricingSummary.registrationFee),
+        securityDeposit: normalizeMoney(pricingSummary.securityDeposit),
+        discountUnit:
+          String(selectedPlan?.discount?.unit || "percentage")
+            .trim()
+            .toLowerCase() === "amount"
+            ? "amount"
+            : "percentage",
+        discountValue: normalizeMoney(selectedPlan?.discount?.value),
+        taxPercentage: normalizeMoney(
+          selectedPlan?.taxPercentage ||
+            selectedCourse?.billingConfig?.taxPercentage ||
+            0,
+        ),
+
         studentData: {
           name: form.name.trim(),
           contact: form.contact,
@@ -303,7 +398,9 @@ export default function StudentRegistrationPage() {
             gender: form.gender,
             dateOfBirth: form.dateOfBirth || null,
             admissionDate: form.admissionDate || null,
-            emergencyContactName: form.emergencyContactName ? form.emergencyContactName.trim() : "",
+            emergencyContactName: form.emergencyContactName
+              ? form.emergencyContactName.trim()
+              : "",
             emergencyContactPhone: form.emergencyContactPhone || "",
             relationship: form.relationship || "",
             bloodGroup: form.bloodGroup || "",
@@ -313,11 +410,17 @@ export default function StudentRegistrationPage() {
             notes: form.notes ? form.notes.trim() : "",
           },
         },
+
         paymentMethodType:
-          form.courseFlowType === "new_course" && form.paymentOption === "online" ? "online" : "none",
-        paymentMethod: form.paymentOption === "pay_later" ? "Cash" : "Online",
+          form.courseFlowType === "new_course" &&
+          form.paymentOption === "online"
+            ? "online"
+            : "none",
+        paymentMethod:
+          form.paymentOption === "pay_later" ? "Cash" : "Online",
         paymentAmount:
-          form.courseFlowType === "new_course" && form.paymentOption === "online"
+          form.courseFlowType === "new_course" &&
+          form.paymentOption === "online"
             ? normalizeMoney(pricingSummary.firstPaymentAmount)
             : 0,
         transactionId: "",
@@ -330,10 +433,13 @@ export default function StudentRegistrationPage() {
         throw new Error(response?.message || "Unable to continue.");
       }
 
+      /* ── Online payment flow ─────────────────────────────── */
       if (response?.paymentAction === "online" && response?.paymentSession) {
         const paymentSession = response.paymentSession;
 
-        if (String(paymentSession?.gateway || "").toLowerCase() === "razorpay") {
+        if (
+          String(paymentSession?.gateway || "").toLowerCase() === "razorpay"
+        ) {
           const sdkLoaded = await loadRazorpayScript();
           if (!sdkLoaded || !window.Razorpay) {
             throw new Error("Unable to load online payment gateway.");
@@ -349,14 +455,21 @@ export default function StudentRegistrationPage() {
             handler: async (razorpayResponse) => {
               setVerifyingPayment(true);
               try {
-                const verifyResponse = await verifyCourseSubscriptionPaymentApi({
-                  razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-                  razorpay_order_id: razorpayResponse.razorpay_order_id,
-                  razorpay_signature: razorpayResponse.razorpay_signature,
-                  paymentAttemptId: optionsData.paymentAttemptId,
-                });
+                const verifyResponse =
+                  await verifyCourseSubscriptionPaymentApi({
+                    razorpay_payment_id:
+                      razorpayResponse.razorpay_payment_id,
+                    razorpay_order_id:
+                      razorpayResponse.razorpay_order_id,
+                    razorpay_signature:
+                      razorpayResponse.razorpay_signature,
+                    paymentAttemptId: optionsData.paymentAttemptId,
+                  });
 
-                if (verifyResponse?.success || verifyResponse?.message === "success") {
+                if (
+                  verifyResponse?.success ||
+                  verifyResponse?.message === "success"
+                ) {
                   setRegistrationSuccess({
                     student: response.student,
                     subscription: response.subscription,
@@ -369,19 +482,25 @@ export default function StudentRegistrationPage() {
                   setVerifyingPayment(false);
                 } else {
                   throw new Error(
-                    verifyResponse?.message || "Payment verification failed. Please try again.",
+                    verifyResponse?.message ||
+                      "Payment verification failed. Please try again.",
                   );
                 }
               } catch (error) {
                 console.error("Payment verification error:", error);
-                setError(error?.message || "Payment verification failed. Please try again.");
+                setError(
+                  error?.message ||
+                    "Payment verification failed. Please try again.",
+                );
                 setLoading(false);
                 setVerifyingPayment(false);
               }
             },
             modal: {
               ondismiss: function () {
-                setError("Checkout was closed before payment completed. You can submit again to retry.");
+                setError(
+                  "Checkout was closed before payment completed. You can submit again to retry.",
+                );
                 setLoading(false);
                 setVerifyingPayment(false);
               },
@@ -391,16 +510,23 @@ export default function StudentRegistrationPage() {
           const razorpay = new window.Razorpay(options);
           razorpay.open();
           setLoading(false);
-        } else if (String(paymentSession?.gateway || "").toLowerCase() === "stripe") {
+        } else if (
+          String(paymentSession?.gateway || "").toLowerCase() === "stripe"
+        ) {
           if (paymentSession?.sessionData?.paymentUrl) {
             window.location.href = paymentSession.sessionData.paymentUrl;
           } else {
-            throw new Error("The payment provider did not return a checkout link.");
+            throw new Error(
+              "The payment provider did not return a checkout link.",
+            );
           }
         } else {
-          throw new Error("The selected online payment method is not supported.");
+          throw new Error(
+            "The selected online payment method is not supported.",
+          );
         }
       } else {
+        /* ── Offline / pay-later / no-payment flow ─────────── */
         setLoading(false);
         setRegistrationSuccess({
           student: response.student,
@@ -408,32 +534,52 @@ export default function StudentRegistrationPage() {
           paymentChoice: form.paymentOption,
           paymentStatus: response.paymentGatewayUnavailable
             ? "Payment pending - gateway unavailable"
-            : form.paymentOption === "pay_later" ? "Pay later at the academy" : "No payment due",
+            : form.paymentOption === "pay_later"
+              ? "Pay later at the academy"
+              : "No payment due",
           paymentVerified: false,
-          paymentGatewayUnavailable: Boolean(response.paymentGatewayUnavailable),
+          paymentGatewayUnavailable: Boolean(
+            response.paymentGatewayUnavailable,
+          ),
         });
       }
     } catch (error) {
       console.error("Registration error:", error);
-      setError(error?.message || "An error occurred during registration. Please try again.");
+      setError(
+        error?.message ||
+          "An error occurred during registration. Please try again.",
+      );
       setLoading(false);
     }
   };
 
+  /* ── Verifying payment state ─────────────────────────────── */
   if (verifyingPayment) {
     return (
       <main className="fixed inset-0 z-[100] flex min-h-screen items-center justify-center bg-pitch px-6 text-foreground">
         <section className="w-full max-w-md text-center">
-          <span className="mx-auto grid size-20 place-items-center rounded-full border border-neon/30 bg-neon/10"><Loader2 className="size-9 animate-spin text-neon" /></span>
+          <span className="mx-auto grid size-20 place-items-center rounded-full border border-neon/30 bg-neon/10">
+            <Loader2 className="size-9 animate-spin text-neon" />
+          </span>
           <p className="eyebrow mt-7">Payment received</p>
-          <h1 className="mt-2 font-display text-4xl uppercase">Verifying your payment</h1>
-          <p className="mt-3 text-sm leading-6 text-foreground/55">Please keep this page open while we confirm your payment and prepare your admission form.</p>
+          <h1 className="mt-2 font-display text-4xl uppercase">
+            Verifying your payment
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-foreground/55">
+            Please keep this page open while we confirm your payment and
+            prepare your admission form.
+          </p>
         </section>
       </main>
     );
   }
 
+  /* ── Success page ────────────────────────────────────────── */
   if (registrationSuccess) {
+    const selectedBranch = branches.find(
+      (branch) => String(branch._id) === String(form.branchIds),
+    );
+
     return (
       <AdmissionSuccessPage
         form={form}
@@ -441,8 +587,8 @@ export default function StudentRegistrationPage() {
         subscription={registrationSuccess.subscription}
         course={selectedCourse}
         plan={selectedPlan}
-        branchName={branches.find((branch) => String(branch._id) === String(form.branchIds))?.name}
-        branchAddress={branches.find((branch) => String(branch._id) === String(form.branchIds))?.address || branches.find((branch) => String(branch._id) === String(form.branchIds))?.location || ""}
+        branchName={selectedBranch?.name}
+        branchAddress={selectedBranch?.address || selectedBranch?.location || ""}
         pricing={pricingSummary}
         paymentChoice={registrationSuccess.paymentChoice}
         paymentStatus={registrationSuccess.paymentStatus}
@@ -455,7 +601,6 @@ export default function StudentRegistrationPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* ── HEADER (mirrors SiteHeader style tokens) ── */}
       {/* ── STEPPER ── */}
       <div className="border-b border-border bg-pitch/40">
         <div className="mx-auto max-w-6xl">
@@ -498,7 +643,11 @@ export default function StudentRegistrationPage() {
       {/* ── FORM CONTENT ── */}
       <main className="mx-auto w-full max-w-[720px] px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-4 sm:px-6 sm:pt-7">
         {step === 1 && (
-          <PersonalProfileStep form={form} updateForm={updateForm} errors={validationErrors} />
+          <PersonalProfileStep
+            form={form}
+            updateForm={updateForm}
+            errors={validationErrors}
+          />
         )}
         {step === 2 && (
           <CourseSelectionStep
@@ -512,12 +661,18 @@ export default function StudentRegistrationPage() {
             pricingSummary={pricingSummary}
             isRecurringCourse={isRecurringCourse}
             loadingData={loadingOptions}
-            selectedBranch={branches.find((branch) => String(branch._id) === String(form.branchIds))}
+            selectedBranch={branches.find(
+              (branch) => String(branch._id) === String(form.branchIds),
+            )}
             errors={validationErrors}
           />
         )}
         {step === 3 && (
-          <AdmissionDetailsStep form={form} updateForm={updateForm} errors={validationErrors} />
+          <AdmissionDetailsStep
+            form={form}
+            updateForm={updateForm}
+            errors={validationErrors}
+          />
         )}
       </main>
 
@@ -568,8 +723,6 @@ export default function StudentRegistrationPage() {
           )}
         </div>
       </div>
-
-      {/* ── SUCCESS MODAL ── */}
     </div>
   );
 }

@@ -19,9 +19,6 @@ export default function AdmissionDetailsStep({ form, updateForm, errors = {} }) 
         <h1 className="font-display text-[20px] uppercase tracking-tighter text-foreground sm:text-[22px]">
           Admission Details
         </h1>
-        <p className="mt-1 text-xs uppercase tracking-widest text-foreground/50 sm:text-sm">
-          Complete your admission details to finalize the registration.
-        </p>
         {Object.keys(errors).length > 0 && (
           <div className="mt-3 rounded-2xl border border-red-500/40 bg-red-500/10 p-3">
             <p className="text-xs font-medium text-red-400 sm:text-sm">
