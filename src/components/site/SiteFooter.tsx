@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -49,42 +48,42 @@ export function SiteFooter() {
           <h5 className="text-[10px] font-bold uppercase tracking-widest">Navigation</h5>
           <div className="grid grid-cols-2 gap-6">
             <nav className="flex flex-col gap-2 text-sm text-foreground/60">
-              <Link to="/" className="hover:text-neon">
+              <a href="/" className="hover:text-neon">
                 Home
-              </Link>
-              <Link to="/about" className="hover:text-neon">
+              </a>
+              <a href="/about" className="hover:text-neon">
                 About
-              </Link>
-              <Link to="/squad" className="hover:text-neon">
+              </a>
+              <a href="/squad" className="hover:text-neon">
                 Squad
-              </Link>
-              <Link to="/contact" className="hover:text-neon">
+              </a>
+              <a href="/contact" className="hover:text-neon">
                 Enquire
-              </Link>
-              <Link to="/team" className="hover:text-neon">
+              </a>
+              <a href="/team" className="hover:text-neon">
                 Our Team
-              </Link>
-              <Link to="/trainers" className="hover:text-neon">
+              </a>
+              <a href="/trainers" className="hover:text-neon">
                 Trainers
-              </Link>
-              <Link to="/gallery" className="hover:text-neon">
+              </a>
+              <a href="/gallery" className="hover:text-neon">
                 Gallery
-              </Link>
-              <Link to="/news" className="hover:text-neon">
+              </a>
+              <a href="/news" className="hover:text-neon">
                 Academy News
-              </Link>
+              </a>
             </nav>
             <div className="border-l border-border pl-5">
               <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-foreground/50">
                 Legal
               </p>
               <nav className="flex flex-col gap-2 text-sm text-foreground/60">
-                <Link to="/terms" className="hover:text-neon">
+                <a href="/terms" className="hover:text-neon">
                   Terms &amp; Conditions
-                </Link>
-                <Link to="/privacy" className="hover:text-neon">
+                </a>
+                <a href="/privacy" className="hover:text-neon">
                   Privacy Policy
-                </Link>
+                </a>
               </nav>
             </div>
           </div>
