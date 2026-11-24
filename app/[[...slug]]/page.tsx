@@ -109,6 +109,12 @@ const pageSeo: Record<string, SeoEntry> = {
     keywords: [],
     noindex: true,
   },
+  "student-dashboard": {
+    title: "Student Dashboard | TAi Football Academy",
+    description: "View your TAi Football Academy profile, courses, attendance and fee information.",
+    keywords: [],
+    noindex: true,
+  },
 };
 
 function createPageMetadata(path: string, seo: SeoEntry): Metadata {

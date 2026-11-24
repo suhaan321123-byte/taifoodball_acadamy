@@ -1,38 +1,48 @@
 import { useEffect, useState } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { getStudentSession, TOKEN_EVENT } from "@/utils/tokenKey";
+
+type StudentSession = {
+  token?: string;
+  authMethod?: string;
+  data?: Record<string, any>;
+  selectedStudent?: Record<string, any> | null;
+  [key: string]: any;
+};
+
+function getSessionUser(session: StudentSession | null) {
+  const student = session?.selectedStudent
+    ?? session?.data?.["students"]?.[0]
+    ?? session?.data?.["student"]
+    ?? (Array.isArray(session?.data) ? session.data[0] : null);
+  const email = session?.["email"] || session?.data?.["email"];
+  return student
+    ? { id: student["_id"], name: student["name"], email: student["email"] }
+    : email
+      ? {
+          id: email,
+          name: session?.data?.["name"] || email,
+          email,
+        }
+      : null;
+}
 
 export function useAuth() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<StudentSession | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (!mounted) return;
-      setSession(nextSession);
+    const syncSession = () => {
+      setSession(getStudentSession());
       setLoading(false);
-    });
-
-    supabase.auth
-      .getSession()
-      .then(({ data: { session: current } }) => {
-        if (!mounted) return;
-        setSession(current);
-        setLoading(false);
-      })
-      .catch(() => {
-        if (!mounted) return;
-        setSession(null);
-        setLoading(false);
-      });
-
+    };
+    syncSession();
+    window.addEventListener(TOKEN_EVENT, syncSession);
+    window.addEventListener("storage", syncSession);
     return () => {
-      mounted = false;
-      data.subscription.unsubscribe();
+      window.removeEventListener(TOKEN_EVENT, syncSession);
+      window.removeEventListener("storage", syncSession);
     };
   }, []);
 
-  const user: User | null = session?.user ?? null;
-  return { session, user, loading };
+  return { session, user: getSessionUser(session), loading };
 }

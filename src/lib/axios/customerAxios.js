@@ -1,5 +1,6 @@
 import axios from "axios";
 import { refreshAccessTokenApi } from "../../api/auth/auth";
+import { clearStudentSession, getCustomerToken, setCustomerToken } from "../../utils/tokenKey";
 
 const baseBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.taifc.in";
@@ -18,7 +19,7 @@ const customerAxios = axios.create({
 // -----------------------
 customerAxios.interceptors.request.use(
   (config) => {
-    const token = null // getCustomerToken();
+    const token = getCustomerToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       delete config.requireAuthHeader;
@@ -78,11 +79,11 @@ customerAxios.interceptors.response.use(
         refreshPromise = refreshAccessTokenApi("customer")
           .then((data) => {
             const newToken = data.accessToken;
-            // setCustomerToken(newToken);
+            setCustomerToken(newToken);
             return newToken;
           })
           .catch((err) => {
-            // removeCustomerToken();
+            clearStudentSession();
             if (!reqUrl.includes("logout")) {
               // window.location.assign("/logout");
             }
@@ -100,9 +101,9 @@ customerAxios.interceptors.response.use(
           return Promise.reject(err);
         }
       } else {
-        // removeCustomerToken();
+        clearStudentSession();
         if (!reqUrl.includes("logout")) {
-          window.location.assign("/logout");
+          window.location.assign("/auth");
         }
         return Promise.reject(error);
       }

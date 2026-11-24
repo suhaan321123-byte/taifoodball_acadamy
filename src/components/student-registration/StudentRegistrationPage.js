@@ -100,6 +100,9 @@ export default function StudentRegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(
+    "Your registration has been completed successfully. You will receive a confirmation email shortly.",
+  );
   const [validationErrors, setValidationErrors] = useState({});
   const router = useRouter();
   const [error, setError] = useState(null);
@@ -417,7 +420,11 @@ export default function StudentRegistrationPage() {
                 });
 
                 if (verifyResponse?.success || verifyResponse?.message === "success") {
-                  router.push(`/student-course-payment/${optionsData.paymentAttemptId}?verified=1`);
+                  setSuccessMessage(
+                    "Your course payment was verified and your registration is complete. Sign in to the student portal to view your dashboard.",
+                  );
+                  setLoading(false);
+                  setShowSuccessModal(true);
                 } else {
                   throw new Error(
                     verifyResponse?.message || "Payment verification failed. Please try again.",
@@ -431,9 +438,8 @@ export default function StudentRegistrationPage() {
             },
             modal: {
               ondismiss: function () {
-                router.push(
-                  `/student-course-payment/${optionsData.paymentAttemptId}?status=cancelled`,
-                );
+                setError("Checkout was closed before payment completed. You can submit again to retry.");
+                setLoading(false);
               },
             },
           };
@@ -597,7 +603,7 @@ export default function StudentRegistrationPage() {
         isOpen={showSuccessModal}
         onClose={handleModalClose}
         title="Registration Successful! 🎉"
-        message="Your registration has been completed successfully. You will receive a confirmation email shortly."
+        message={successMessage}
         redirectUrl="/auth?mode=login"
         autoCloseDelay={5000}
         showCountdown={true}
