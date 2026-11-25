@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { news } from "@/data/academy";
+import { usePublicAcademyContent } from "@/hooks/usePublicAcademyContent";
 
 export const Route = createFileRoute("/news")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/news")({
 });
 
 function NewsPage() {
+  const content = usePublicAcademyContent({ news, gallery: [], testimonials: [] }, ["news"]);
   return (
     <main className="pb-24">
       <section className="border-b border-border py-20">
@@ -34,16 +36,16 @@ function NewsPage() {
 
       <section className="py-16">
         <div className="mx-auto max-w-5xl space-y-16 px-6">
-          {news.map((item) => (
+          {content.news.map((item) => (
             <article key={item.slug} className="grid gap-8 lg:grid-cols-[2fr_3fr]">
-              <img
+              {item.image ? <img
                 src={item.image}
                 alt={item.title}
                 width={1024}
                 height={640}
                 loading="lazy"
                 className="aspect-[16/10] w-full rounded-lg object-cover"
-              />
+              /> : <div className="aspect-[16/10] w-full rounded-lg bg-surface" aria-hidden="true" />}
               <div>
                 <div className="flex items-center gap-4">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-neon">
@@ -57,7 +59,7 @@ function NewsPage() {
                   {item.title}
                 </h2>
                 <div className="mt-4 space-y-3">
-                  {item.body.map((paragraph) => (
+                  {item.body.map((paragraph: string) => (
                     <p key={paragraph} className="text-sm leading-relaxed text-foreground/60">
                       {paragraph}
                     </p>
@@ -66,6 +68,7 @@ function NewsPage() {
               </div>
             </article>
           ))}
+          {!content.loading && content.news.length === 0 ? <p className="text-sm text-foreground/50">Academy news will be posted here soon.</p> : null}
         </div>
       </section>
     </main>

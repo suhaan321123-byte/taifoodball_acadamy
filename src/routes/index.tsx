@@ -10,6 +10,8 @@ import galleryImage4 from "@/assets/gallery/IMG-20250415-WA0022.jpg.jpeg";
 import galleryImage5 from "@/assets/gallery/IMG_20240826_223150_399.webp";
 import galleryImage6 from "@/assets/gallery/IMG_20240908_134256_631.webp";
 import { certifications, news } from "@/data/academy";
+import { galleryImages as academyGalleryImages } from "@/data/academy";
+import { usePublicAcademyContent } from "@/hooks/usePublicAcademyContent";
 
 type ImportedImage = string | { src: string };
 
@@ -75,6 +77,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const content = usePublicAcademyContent({
+    news,
+    gallery: academyGalleryImages,
+    testimonials,
+  }, ["news", "gallery", "testimonials"]);
+
   return (
     <main>
       <section className="relative flex min-h-[80vh] items-center overflow-hidden lg:h-[90vh]">
@@ -148,16 +156,9 @@ function Index() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2">
-            {news.slice(0, 2).map((item) => (
+            {content.news.slice(0, 2).map((item) => (
               <article key={item.slug} className="group">
-                <img
-                  src={getImageSrc(item.image as ImportedImage)}
-                  alt={item.title}
-                  width={1024}
-                  height={640}
-                  loading="lazy"
-                  className="mb-6 aspect-[16/10] w-full rounded-lg object-cover"
-                />
+                {item.image ? <img src={getImageSrc(item.image as ImportedImage)} alt={item.title} width={1024} height={640} loading="lazy" className="mb-6 aspect-[16/10] w-full rounded-lg object-cover" /> : <div className="mb-6 aspect-[16/10] w-full rounded-lg bg-surface" aria-hidden="true" />}
                 <span className="text-[10px] font-bold uppercase tracking-widest text-neon">
                   {item.category}
                 </span>
@@ -167,6 +168,7 @@ function Index() {
                 <p className="mt-3 text-sm leading-relaxed text-foreground/50">{item.excerpt}</p>
               </article>
             ))}
+            {!content.loading && content.news.length === 0 ? <p className="text-sm text-foreground/50">Academy news will be posted here soon.</p> : null}
           </div>
         </div>
 
@@ -281,23 +283,17 @@ function Index() {
 
         <div className="image-marquee" aria-hidden="true">
           <div className="image-marquee__track">
-            {[...galleryImages, ...galleryImages].map((image, index) => (
+            {[...content.gallery, ...content.gallery].map((image, index) => (
               <div
                 key={`${image.src}-${index}`}
                 className="image-marquee__card overflow-hidden rounded-lg border border-border bg-surface/40"
               >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={640}
-                  height={480}
-                  sizes="(max-width: 768px) 80vw, 320px"
-                  className="size-full object-cover transition-transform duration-500 hover:scale-105"
-                />
+                <img src={image.src} alt={image.alt} width={640} height={480} loading="lazy" className="size-full object-cover transition-transform duration-500 hover:scale-105" />
               </div>
             ))}
           </div>
         </div>
+        {!content.loading && content.gallery.length === 0 ? <p className="px-6 text-center text-sm text-foreground/50">Training photos will be added soon.</p> : null}
 
         <div className="mt-8 px-6 text-center sm:hidden">
           <Link
@@ -319,7 +315,7 @@ function Index() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((testimonial) => (
+            {content.testimonials.map((testimonial) => (
               <figure
                 key={testimonial.name}
                 className="flex min-h-52 flex-col justify-between rounded-lg border border-border bg-background/70 p-6"
@@ -328,10 +324,11 @@ function Index() {
                   &ldquo;{testimonial.quote}&rdquo;
                 </blockquote>
                 <figcaption className="mt-8 border-t border-border pt-4 text-xs font-bold uppercase tracking-widest text-neon">
-                  {testimonial.name} <span className="text-foreground/40">- Student</span>
+                  {testimonial.name} <span className="text-foreground/40">- {testimonial.role || "Student"}</span>
                 </figcaption>
               </figure>
             ))}
+            {!content.loading && content.testimonials.length === 0 ? <p className="text-sm text-foreground/50">Student testimonials will appear here soon.</p> : null}
           </div>
         </div>
       </section>

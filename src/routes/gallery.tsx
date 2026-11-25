@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { galleryImages } from "@/data/academy";
+import { usePublicAcademyContent } from "@/hooks/usePublicAcademyContent";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
+  const content = usePublicAcademyContent({ news: [], gallery: galleryImages, testimonials: [] }, ["gallery"]);
   return (
     <main className="pb-24">
       <section className="border-b border-border py-20">
@@ -34,9 +36,9 @@ function GalleryPage() {
 
       <section className="py-16">
         <div className="mx-auto grid max-w-7xl gap-4 px-6 sm:grid-cols-2 lg:grid-cols-3">
-          {galleryImages.map((image) => (
+          {content.gallery.map((image, index) => (
             <img
-              key={image.alt}
+              key={`${image.src}-${index}`}
               src={image.src}
               alt={image.alt}
               width={1024}
@@ -46,6 +48,7 @@ function GalleryPage() {
             />
           ))}
         </div>
+        {!content.loading && content.gallery.length === 0 ? <p className="mx-auto max-w-7xl px-6 text-sm text-foreground/50">Gallery photos will be added soon.</p> : null}
       </section>
     </main>
   );
