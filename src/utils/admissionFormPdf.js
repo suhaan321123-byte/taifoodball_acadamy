@@ -172,7 +172,7 @@ export async function downloadAdmissionFormPdf(details) {
   row("Blood group", details.bloodGroup);
 
   const feeRows = [
-    ["Programme fee", details.baseAmount],
+    ["Course fee", details.baseAmount],
     ["Discount", Number(details.discountAmount) > 0 ? -Number(details.discountAmount) : 0],
     ["Registration fee", details.registrationFee],
     ["Security deposit", details.securityDeposit],
@@ -181,7 +181,7 @@ export async function downloadAdmissionFormPdf(details) {
       charge.amount,
     ]),
     ["Tax", details.taxAmount],
-    ["Recurring installment", details.recurringAmount],
+    // ["Recurring installment", details.recurringAmount],
     ["Estimated total", details.estimatedFee],
   ].filter(([, amount]) => Math.abs(Number(amount)) > 0);
 
