@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import RouterApp from "../router-app";
+import { getServerPublicContent, type PublicFeed } from "@/lib/serverPublicContent";
 
 const siteUrl = process.env["NEXT_PUBLIC_SITE_URL"];
 
@@ -150,7 +151,6 @@ export async function generateMetadata({
   params: Promise<{ slug?: string[] }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-
   if (slug?.length) {
     const path = slug.join("/");
     const seo = pageSeo[path];
@@ -202,6 +202,13 @@ export default async function LegacyRoutePage({
   params: Promise<{ slug?: string[] }>;
 }) {
   const { slug } = await params;
+  const routeName = slug?.join("/") || "home";
+  const feedsByRoute: Record<string, PublicFeed[]> = {
+    home: ["news", "gallery", "testimonials"],
+    news: ["news"],
+    gallery: ["gallery"],
+  };
+  const publicContent = await getServerPublicContent(feedsByRoute[routeName] || []);
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SportsActivityLocation",
@@ -229,7 +236,7 @@ export default async function LegacyRoutePage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       ) : null}
-      <RouterApp />
+      <RouterApp {...publicContent} />
     </>
   );
 }

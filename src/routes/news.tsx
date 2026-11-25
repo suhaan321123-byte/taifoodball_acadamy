@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { news } from "@/data/academy";
 import { usePublicAcademyContent } from "@/hooks/usePublicAcademyContent";
 
 export const Route = createFileRoute("/news")({
@@ -22,7 +21,7 @@ export const Route = createFileRoute("/news")({
 });
 
 function NewsPage() {
-  const content = usePublicAcademyContent({ news, gallery: [], testimonials: [] }, ["news"]);
+  const content = usePublicAcademyContent(["news"]);
   return (
     <main className="pb-24">
       <section className="border-b border-border py-20">
@@ -68,7 +67,8 @@ function NewsPage() {
               </div>
             </article>
           ))}
-          {!content.loading && content.news.length === 0 ? <p className="text-sm text-foreground/50">Academy news will be posted here soon.</p> : null}
+          {content.loading && content.news.length === 0 ? <p className="text-sm text-foreground/50">Loading academy news…</p> : null}
+          {!content.loading && content.news.length === 0 ? <p className="text-sm text-foreground/50">{content.errors.news ? "Academy news is temporarily unavailable." : "No academy news has been published yet."}</p> : null}
         </div>
       </section>
     </main>

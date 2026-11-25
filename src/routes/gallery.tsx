@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { galleryImages } from "@/data/academy";
 import { usePublicAcademyContent } from "@/hooks/usePublicAcademyContent";
 
 export const Route = createFileRoute("/gallery")({
@@ -22,7 +21,7 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
-  const content = usePublicAcademyContent({ news: [], gallery: galleryImages, testimonials: [] }, ["gallery"]);
+  const content = usePublicAcademyContent(["gallery"]);
   return (
     <main className="pb-24">
       <section className="border-b border-border py-20">
@@ -48,7 +47,8 @@ function GalleryPage() {
             />
           ))}
         </div>
-        {!content.loading && content.gallery.length === 0 ? <p className="mx-auto max-w-7xl px-6 text-sm text-foreground/50">Gallery photos will be added soon.</p> : null}
+        {content.loading && content.gallery.length === 0 ? <p className="mx-auto max-w-7xl px-6 text-sm text-foreground/50">Loading academy gallery…</p> : null}
+        {!content.loading && content.gallery.length === 0 ? <p className="mx-auto max-w-7xl px-6 text-sm text-foreground/50">{content.errors.gallery ? "The academy gallery is temporarily unavailable." : "No gallery photos have been published yet."}</p> : null}
       </section>
     </main>
   );

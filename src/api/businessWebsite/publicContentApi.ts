@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: process.env["NEXT_PUBLIC_BACKEND_URL"] || "",
-  timeout: 12000,
+  timeout: 6000,
   headers: {
     "Content-Type": "application/json",
     "X-domain-name": process.env["NEXT_PUBLIC_SITE_URL"] || "https://www.taifc.in",
@@ -11,6 +11,7 @@ const api = axios.create({
 
 const accountTypeId = process.env["NEXT_PUBLIC_ACCOUNT_TYPE_ID"] || "";
 const siteDomain = process.env["NEXT_PUBLIC_SITE_URL"] || "https://www.taifc.in";
+export const publicContentCachePrefix = `tai-academy-public-content-v1:${accountTypeId}`;
 
 export async function getPublicPosts() {
   const { data } = await api.get("/business_website/post/get_published_posts", {

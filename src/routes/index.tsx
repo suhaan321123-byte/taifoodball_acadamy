@@ -3,14 +3,7 @@ import Image from "next/image";
 import heroBanner from "@/assets/herobanner.png";
 import gainSponsor from "@/assets/gain.jpg";
 import terraSponsor from "@/assets/terra.jpg";
-import galleryImage1 from "@/assets/gallery/IMG-20240120-WA0010.jpg.jpeg";
-import galleryImage2 from "@/assets/gallery/IMG-20240122-WA0035.jpg.jpeg";
-import galleryImage3 from "@/assets/gallery/IMG-20250405-WA0008.jpg.jpeg";
-import galleryImage4 from "@/assets/gallery/IMG-20250415-WA0022.jpg.jpeg";
-import galleryImage5 from "@/assets/gallery/IMG_20240826_223150_399.webp";
-import galleryImage6 from "@/assets/gallery/IMG_20240908_134256_631.webp";
-import { certifications, news } from "@/data/academy";
-import { galleryImages as academyGalleryImages } from "@/data/academy";
+import { certifications } from "@/data/academy";
 import { usePublicAcademyContent } from "@/hooks/usePublicAcademyContent";
 
 type ImportedImage = string | { src: string };
@@ -18,43 +11,6 @@ type ImportedImage = string | { src: string };
 function getImageSrc(image: ImportedImage): string {
   return typeof image === "string" ? image : image.src;
 }
-
-const galleryImages = [
-  { src: getImageSrc(galleryImage1), alt: "Young players training on the pitch" },
-  { src: getImageSrc(galleryImage2), alt: "Football academy training session" },
-  { src: getImageSrc(galleryImage3), alt: "Players competing in an academy match" },
-  { src: getImageSrc(galleryImage4), alt: "Team football action" },
-  { src: getImageSrc(galleryImage5), alt: "Academy players during practice" },
-  { src: getImageSrc(galleryImage6), alt: "Players developing their football skills" },
-];
-
-const testimonials = [
-  {
-    name: "Rishan",
-    quote:
-      "ഇവിടത്തെ ഓരോ ട്രെയിനിംഗ് സെഷനും ഞാൻ നന്നായി എൻജോയ് ചെയ്യുന്നു. പുതിയ സ്കിൽസും ഫിറ്റ്നസ് ട്രെയിനിംഗും കിട്ടുന്നുണ്ട്. കോച്ചുമാർ എപ്പോഴും നല്ല രീതിയിൽ മോട്ടിവേറ്റ് ചെയ്യും.",
-  },
-  {
-    name: "Nihal",
-    quote:
-      "The training is very systematic. We practice passing, shooting, dribbling and fitness. I can really see improvement in my game.",
-  },
-  {
-    name: "Shamil",
-    quote:
-      "Training here is challenging but fun. I have improved my stamina, ball control and confidence.",
-  },
-  {
-    name: "Arjun",
-    quote:
-      "Good academy for anyone who seriously wants to improve in football. Coaches explain things clearly and give us enough practice.",
-  },
-  {
-    name: "Rayan",
-    quote:
-      "ഇവിടെ ട്രെയിനിംഗിന് വരാൻ എനിക്ക് വളരെ ഇഷ്ടമാണ്. നല്ല ഫ്രണ്ട്ലി അന്തരീക്ഷമാണ്. ഫ്രണ്ട്സിനൊപ്പം എൻജോയ് ചെയ്തുകൊണ്ട് ഫുട്ബോൾ പഠിക്കാനും കഴിയുന്നു.",
-  },
-];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -77,11 +33,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const content = usePublicAcademyContent({
-    news,
-    gallery: academyGalleryImages,
-    testimonials,
-  }, ["news", "gallery", "testimonials"]);
+  const content = usePublicAcademyContent(["news", "gallery", "testimonials"]);
 
   return (
     <main>
@@ -168,7 +120,7 @@ function Index() {
                 <p className="mt-3 text-sm leading-relaxed text-foreground/50">{item.excerpt}</p>
               </article>
             ))}
-            {!content.loading && content.news.length === 0 ? <p className="text-sm text-foreground/50">Academy news will be posted here soon.</p> : null}
+            {content.loading && content.news.length === 0 ? <p className="text-sm text-foreground/50">Loading academy news…</p> : null}{!content.loading && content.news.length === 0 ? <p className="text-sm text-foreground/50">{content.errors.news ? "Academy news is temporarily unavailable." : "No academy news has been published yet."}</p> : null}
           </div>
         </div>
 
@@ -293,7 +245,8 @@ function Index() {
             ))}
           </div>
         </div>
-        {!content.loading && content.gallery.length === 0 ? <p className="px-6 text-center text-sm text-foreground/50">Training photos will be added soon.</p> : null}
+        {content.loading && content.gallery.length === 0 ? <p className="px-6 text-center text-sm text-foreground/50">Loading academy photos…</p> : null}
+        {!content.loading && content.gallery.length === 0 ? <p className="px-6 text-center text-sm text-foreground/50">{content.errors.gallery ? "Academy photos are temporarily unavailable." : "No gallery photos have been published yet."}</p> : null}
 
         <div className="mt-8 px-6 text-center sm:hidden">
           <Link
@@ -328,7 +281,8 @@ function Index() {
                 </figcaption>
               </figure>
             ))}
-            {!content.loading && content.testimonials.length === 0 ? <p className="text-sm text-foreground/50">Student testimonials will appear here soon.</p> : null}
+            {content.loading && content.testimonials.length === 0 ? <p className="text-sm text-foreground/50">Loading testimonials…</p> : null}
+            {!content.loading && content.testimonials.length === 0 ? <p className="text-sm text-foreground/50">{content.errors.testimonials ? "Testimonials are temporarily unavailable." : "No testimonials have been published yet."}</p> : null}
           </div>
         </div>
       </section>
