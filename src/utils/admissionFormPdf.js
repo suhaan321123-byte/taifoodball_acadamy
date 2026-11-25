@@ -86,10 +86,10 @@ export async function downloadAdmissionFormPdf(details) {
     });
 
     // Separator rule BELOW the header block — does not touch the date text
-    const headerBottom = logoY + logoSize + 4; // 16 + 16 + 4 = 36
-    // pdf.setDrawColor(...ruleMid);
-    // pdf.setLineWidth(0.4);
-    // pdf.line(margin, headerBottom, pageWidth - margin, headerBottom);
+    const headerBottom = logoY + logoSize + 8; // 16 + 16 + 4 = 36
+    pdf.setDrawColor(...ruleMid);
+    pdf.setLineWidth(0.4);
+    pdf.line(margin, headerBottom, pageWidth - margin, headerBottom);
 
     // Document title (smaller, sits under the rule)
     pdf.setTextColor(...ink);
@@ -97,7 +97,7 @@ export async function downloadAdmissionFormPdf(details) {
     pdf.setFontSize(10);
     pdf.text("STUDENT ADMISSION FORM", margin, headerBottom + 9);
 
-    y = headerBottom + 15; // start content well below title
+    y = headerBottom + 12; // start content well below title
   };
 
   // ---- CONTINUATION PAGES: no header ----
@@ -161,7 +161,6 @@ export async function downloadAdmissionFormPdf(details) {
   row("Package", details.planName);
   row("Training branch", details.branchName);
   row("Admission date", formatDate(details.admissionDate || details.startDate));
-  row("Estimated duration", details.durationLabel);
   row("Registration ID", details.memberCode || details.formId || "Pending");
 
   section("Parent / guardian and emergency contact");
@@ -171,7 +170,6 @@ export async function downloadAdmissionFormPdf(details) {
   row("Emergency contact", details.emergencyContactName);
   row("Emergency phone", details.emergencyContactPhone);
   row("Blood group", details.bloodGroup);
-  if (details.notes) row("Additional notes", details.notes);
 
   const feeRows = [
     ["Programme fee", details.baseAmount],
